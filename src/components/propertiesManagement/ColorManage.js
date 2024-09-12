@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {Modal} from 'bootstrap'
+import { Modal } from 'bootstrap'
 
 function ColorManage() {
 
@@ -22,6 +22,20 @@ function ColorManage() {
         }
         fetchData();
     }, [])
+
+    const refreshListColor = ()=>{
+        const fetchData = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/mau-sac/show-all");
+                const data = await response.json();
+                setListColor(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchData();
+    }
 
     function handleInputChange(e) {
         let { name, value } = e.target;
@@ -61,6 +75,25 @@ function ColorManage() {
             }
         }
         submitData();
+    }
+
+    const deleteColor = (id) => {
+        const delColor = async () => {
+            try{
+                const response = await fetch(`http://localhost:5050/api/v1/mau-sac/delete-mau-sac/${id}`, {
+                    method: "DELETE",
+                });
+                const data = await response.json();
+                console.log(data);
+                
+                refreshListColor();
+                
+            } catch(error) {
+                console.error(error);
+            }
+        }
+        delColor();
+
     }
     return (
         <>
@@ -151,7 +184,12 @@ function ColorManage() {
                                 <td>{color.ma}</td>
                                 <td>{color.ten}</td>
                                 <td>
-                                    <a className='btn btn-danger col' style={{ marginRight: "20px" }}>Delete</a>
+                                    <a className='btn btn-danger col'
+                                        style={{ marginRight: "20px" }}
+                                        onClick={() => {
+                                            deleteColor(color.id);
+                                        }}
+                                    >Delete</a>
                                     <a className='btn btn-warning'>Update</a>
                                 </td>
                             </tr>
