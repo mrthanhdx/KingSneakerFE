@@ -5,7 +5,6 @@ import { GContext } from "./Context";
 
 function Navbar() {
     const { currentUI, setCurrentUI } = useContext(GContext);
-    console.log(currentUI);
 
 
     return (
@@ -34,6 +33,15 @@ function Navbar() {
                                         setCurrentUI("SellInCounter");
                                     }}
                                 >Bán Hàng Tại Quầy</a>
+                            </li>
+
+                            <li className="nav-item">
+                                <a className="nav-link"
+                                    href="#"
+                                    onClick={() => {
+                                        setCurrentUI("ProductManage");
+                                    }}
+                                >Quản lí Sản Phẩm</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link"
@@ -70,7 +78,7 @@ function Navbar() {
                                             onClick={() => {
                                                 setCurrentUI("SizeManagement");
                                             }}
-                                        >Kích Thước</a>
+                                        >Kích Cỡ</a>
                                     </li>
                                     <li>
                                         <a className="dropdown-item"
@@ -88,7 +96,7 @@ function Navbar() {
                                             }}
                                         >Thương Hiệu</a>
                                     </li>
-                                    <li><hr className="dropdown-divider"></hr></li>
+                                    {/* <li><hr className="dropdown-divider"></hr></li>
                                     <li>
                                         <a className="dropdown-item"
                                          href="#"
@@ -96,7 +104,7 @@ function Navbar() {
                                             setCurrentUI("ProductManagement");
                                         }}
                                          >Product Manage</a>
-                                         </li>
+                                         </li> */}
                                 </ul>
                             </li>
 
