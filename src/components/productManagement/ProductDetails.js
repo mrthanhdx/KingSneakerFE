@@ -2,7 +2,7 @@
 
 function ProductDetails(){
     return (
-        <h1>ProductDetails Manage</h1>
+        <h1>Product Details Manage</h1>
     )
 }
 
