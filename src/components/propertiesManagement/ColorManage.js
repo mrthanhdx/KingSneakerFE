@@ -140,6 +140,7 @@ function ColorManage() {
     }
     return (
         <>
+         <h1> Color Management</h1>
             <br></br>
             <br></br>
             {/* <!-- Button trigger modal --> */}
@@ -176,6 +177,7 @@ function ColorManage() {
                                         onChange={(e) => {
                                             handleInputChange(e);
                                         }}
+                                        required
                                     ></input>
                                 </div>
                                 <br></br>
@@ -190,6 +192,7 @@ function ColorManage() {
                                         onChange={(e) => {
                                             handleInputChange(e);
                                         }}
+                                        required
                                     ></input>
                                 </div>
                                 <button type="submit" className="btn btn-primary">Submit</button>
