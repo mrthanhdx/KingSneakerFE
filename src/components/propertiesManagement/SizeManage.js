@@ -232,12 +232,7 @@ function SizeManage() {
                                 <td>{Size.ma}</td>
                                 <td>{Size.ten}</td>
                                 <td>
-                                    <a className='btn btn-danger col'
-                                        style={{ marginRight: "20px" }}
-                                        onClick={() => {
-                                            deleteSize(Size.id);
-                                        }}
-                                    >Delete</a>
+                                   
                                     <a
                                         className='btn btn-warning'
                                         data-bs-toggle="modal"

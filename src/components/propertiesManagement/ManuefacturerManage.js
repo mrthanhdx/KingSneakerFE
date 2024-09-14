@@ -232,12 +232,7 @@ function ManuefacturerManage() {
                                 <td>{Manuefacturer.ma}</td>
                                 <td>{Manuefacturer.ten}</td>
                                 <td>
-                                    <a className='btn btn-danger col'
-                                        style={{ marginRight: "20px" }}
-                                        onClick={() => {
-                                            deleteManuefacturer(Manuefacturer.id);
-                                        }}
-                                    >Delete</a>
+                                   
                                     <a
                                         className='btn btn-warning'
                                         data-bs-toggle="modal"

@@ -232,12 +232,7 @@ function BrandManage() {
                                 <td>{Brand.ma}</td>
                                 <td>{Brand.ten}</td>
                                 <td>
-                                    <a className='btn btn-danger col'
-                                        style={{ marginRight: "20px" }}
-                                        onClick={() => {
-                                            deleteBrand(Brand.id);
-                                        }}
-                                    >Delete</a>
+                                   
                                     <a
                                         className='btn btn-warning'
                                         data-bs-toggle="modal"
