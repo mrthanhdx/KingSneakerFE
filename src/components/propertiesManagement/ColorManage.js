@@ -231,12 +231,7 @@ function ColorManage() {
                                 <td>{color.ma}</td>
                                 <td>{color.ten}</td>
                                 <td>
-                                    <a className='btn btn-danger col'
-                                        style={{ marginRight: "20px" }}
-                                        onClick={() => {
-                                            deleteColor(color.id);
-                                        }}
-                                    >Delete</a>
+                                  
                                     <a
                                         className='btn btn-warning'
                                         data-bs-toggle="modal"

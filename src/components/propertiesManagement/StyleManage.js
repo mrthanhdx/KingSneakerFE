@@ -232,12 +232,7 @@ function StyleManage() {
                                 <td>{Style.ma}</td>
                                 <td>{Style.ten}</td>
                                 <td>
-                                    <a className='btn btn-danger col'
-                                        style={{ marginRight: "20px" }}
-                                        onClick={() => {
-                                            deleteStyle(Style.id);
-                                        }}
-                                    >Delete</a>
+                                    
                                     <a
                                         className='btn btn-warning'
                                         data-bs-toggle="modal"
