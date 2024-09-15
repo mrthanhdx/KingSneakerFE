@@ -268,6 +268,7 @@ function ColorManage() {
                                                                 onChange={(e) => {
                                                                     handleInputUpdateChange(e);
                                                                 }}
+                                                                required
                                                             ></input>
                                                         </div>
                                                         <br></br>
@@ -282,6 +283,8 @@ function ColorManage() {
                                                                 onChange={(e) => {
                                                                     handleInputUpdateChange(e);
                                                                 }}
+                                                                required
+
                                                             ></input>
                                                         </div>
                                                         <button type="submit" className="btn btn-primary">Submit</button>
