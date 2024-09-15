@@ -203,6 +203,7 @@ function ProductManage() {
                                             handleInputChange(e);
                                         }}
                                         required
+                                        
                                     ></input>
                                 </div>
                                 <br></br>
@@ -311,7 +312,7 @@ function ProductManage() {
                                 <td
                                     className={Product.trangThai == 1 ? "text-success" : "text-danger"}
                                     style={{ fontSize: "18px", fontWeight: "bold" }}
-                                >{Product.trangThai == 1 ? "Sẵn Hàng" : "Hết Hàng"}</td>
+                                >{Product.trangThai == 1 ? "Sẵn Hàng" : "Ngừng Bán"}</td>
                                 <td>{Product.moTa}</td>
 
                                 <td>
@@ -357,6 +358,7 @@ function ProductManage() {
                                                                 onChange={(e) => {
                                                                     handleInputUpdateChange(e);
                                                                 }}
+                                                                required
                                                             ></input>
                                                         </div>
                                                         <br></br>
@@ -371,6 +373,7 @@ function ProductManage() {
                                                                 onChange={(e) => {
                                                                     handleInputUpdateChange(e);
                                                                 }}
+                                                                required
                                                             ></input>
                                                         </div>
 
