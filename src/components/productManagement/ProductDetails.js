@@ -15,11 +15,22 @@ function ProductDetails() {
         ten: ""
     });
 
+
+    const [listColor, setListColor] = useState([]);
+    const [listBrand, setListBrand] = useState([]);
+    const [listStyle, setListStyle] = useState([]);
+    const [listSize, setListSize] = useState([]);
+    const [listProduct, setListProduct] = useState([]);
+    const [listManuefacturer, setListManuefacturer] = useState([]);
+
     console.log(listProductDetail);
 
 
+
     useEffect(() => {
-        const fetchData = async () => {
+
+        //fetch data Chi tiet san pham
+        const fetchDataCtsp = async () => {
             try {
                 const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
                 const data = await response.json();
@@ -29,7 +40,92 @@ function ProductDetails() {
                 console.error(error);
             }
         }
-        fetchData();
+        fetchDataCtsp();
+
+
+        //fetch data list mau sac
+        const fetchDataProduct = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/san-pham/show-all");
+                const data = await response.json();
+                setListProduct(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataProduct();
+
+        //fetch data list mau sac
+
+        const fetchDataColor = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/mau-sac/show-all");
+                const data = await response.json();
+                setListColor(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataColor();
+
+
+        //fetch data list size
+        const fetchDataSize = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/kich-co/show-all");
+                const data = await response.json();
+                setListSize(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataSize();
+
+
+        //fetch data list Brand
+        const fetchDataBrand = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/thuong-hieu/show-all");
+                const data = await response.json();
+                setListBrand(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataBrand();
+
+
+        //fetch data list Manuefacturer
+        const fetchDataManuefacturer= async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/NSX/show-all");
+                const data = await response.json();
+                setListManuefacturer(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataManuefacturer();
+
+
+        //fetch data list style
+        const fetchDataStyle = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/kieu-dang/show-all");
+                const data = await response.json();
+                setListStyle(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataStyle();
+
     }, [])
 
     const refreshlistProductDetail = () => {
@@ -173,8 +269,15 @@ function ProductDetails() {
                                 <div className='row'>
                                     <div className='mb-2 col-4'>
                                         <label className='form-label'> Chọn Sản Phẩm</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
+                                        <select className="form-select" aria-label="Default select example">
+                                        {listProduct.map((product) => {
+                                                return (
+                                                    <option
+                                                        key={product.id}
+                                                        value={product.id}
+                                                    >{product.ten}</option>
+                                                )
+                                            })}
                                         </select>
                                     </div>
                                 </div>
@@ -183,23 +286,44 @@ function ProductDetails() {
                                 <div className='row'>
 
                                     <div className='mb-2 col-3'>
-                                        <label className='form-label'> Chọn Sản Phẩm</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
+                                        <label className='form-label'> Chọn Kích cỡ</label>
+                                        <select className="form-select" aria-label="Default select example">
+                                        {listSize.map((size) => {
+                                                return (
+                                                    <option
+                                                        key={size.id}
+                                                        value={size.id}
+                                                    >{size.ten}</option>
+                                                )
+                                            })}
                                         </select>
                                     </div>
 
                                     <div className='mb-2 col-3'>
-                                        <label className='form-label'> Chọn Sản Phẩm</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
+                                        <label className='form-label'> Chọn Kiểu Dáng</label>
+                                        <select className="form-select" aria-label="Default select example">
+                                        {listStyle.map((style) => {
+                                                return (
+                                                    <option
+                                                        key={style.id}
+                                                        value={style.id}
+                                                    >{style.ten}</option>
+                                                )
+                                            })}
                                         </select>
                                     </div>
 
                                     <div className='mb-2 col-3'>
-                                        <label className='form-label'> Chọn Sản Phẩm</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
+                                        <label className='form-label'> Chọn Màu Sắc </label>
+                                        <select className="form-select" aria-label="Default select example">
+                                            {listColor.map((color) => {
+                                                return (
+                                                    <option
+                                                        key={color.id}
+                                                        value={color.id}
+                                                    >{color.ten}</option>
+                                                )
+                                            })}
                                         </select>
                                     </div>
 
@@ -209,65 +333,86 @@ function ProductDetails() {
                                 <div className='row'>
 
                                     <div className='mb-2 col-3'>
-                                        <label className='form-label'> Màu Sắc</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
+                                        <label className='form-label'> Nhà Sản Xuất</label>
+                                        <select className="form-select" aria-label="Default select example">
+                                        {listManuefacturer.map((manuefacturer) => {
+                                                return (
+                                                    <option
+                                                        key={manuefacturer.id}
+                                                        value={manuefacturer.id}
+                                                    >{manuefacturer.ten}</option>
+                                                )
+                                            })}
                                         </select>
                                     </div>
 
                                     <div className='mb-2 col-3'>
-                                        <label className='form-label'> Chọn Sản Phẩm</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
+                                        <label className='form-label'> Chọn Thương Hiệu</label>
+                                        <select className="form-select" aria-label="Default select example">
+                                        {listBrand.map((brand) => {
+                                                return (
+                                                    <option
+                                                        key={brand.id}
+                                                        value={brand.id}
+                                                    >{brand.ten}</option>
+                                                )
+                                            })}
                                         </select>
                                     </div>
 
-                                    <div className='mb-2 col-3'>
-                                        <label className='form-label'> Chọn Sản Phẩm</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Open this select menu</option>
-                                        </select>
-                                    </div>
+
 
                                 </div>
 
-
-                                <div className="mb-3 col-4">
-                                    <label htmlFor="exampleMaProductDetail" className="form-label">Price</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        name='ma'
-                                        id="exampleMaProductDetail"
-                                        value={formData.ma}
-                                        onChange={(e) => {
-                                            handleInputChange(e);
-                                        }}
-                                        required
-
-                                    ></input>
-                                </div>
                                 <br></br>
-                                <div className="mb-3">
-                                    <label htmlFor="exampleTenProductDetail" className="form-label">Quantity</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        name='ten'
-                                        id="exampleTenProductDetail"
-                                        value={formData.ten}
-                                        onChange={(e) => {
-                                            handleInputChange(e);
-                                        }}
-                                        required
-                                    ></input>
+                                <div className='row'>
+                                    <div className="mb-3 col-3">
+                                        <label htmlFor="exampleMaProductDetail" className="form-label">Price</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            name='ma'
+                                            id="exampleMaProductDetail"
+                                            value={formData.ma}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                            required
+
+                                        ></input>
+                                    </div>
+                                    <br></br>
+                                    <div className="mb-3 col-3">
+                                        <label htmlFor="exampleTenProductDetail" className="form-label">Quantity</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            name='ten'
+                                            id="exampleTenProductDetail"
+                                            value={formData.ten}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                            required
+                                        ></input>
+                                    </div>
                                 </div>
 
-                                <div className='mb-3 row'
-                                    style={{ justifyContent: "center" }}
+                                <br></br>
+                                <div className='mb-3 col-5'>
+                                    <label className='form-label'>Chọn Ảnh</label>
+                                    <br></br>
+                                    <input type='file'></input>
+                                </div>
+
+                                <br></br>
+
+                                <div className='mb-3 row col-10'
+                                // style={{ justifyContent: "center" }}
                                 >
-
-                                    <div className="form-check col-3">
+                                    <div className="form-check col-2"
+                                        style={{ marginLeft: "40px" }}
+                                    >
                                         <input
                                             className="form-check-input"
                                             type="radio" name="trangThai"
@@ -281,7 +426,7 @@ function ProductDetails() {
                                             Sẵn Hàng
                                         </label>
                                     </div>
-                                    <div className="form-check col-3">
+                                    <div className="form-check col-2">
                                         <input
                                             className="form-check-input"
                                             type="radio" name="trangThai"
