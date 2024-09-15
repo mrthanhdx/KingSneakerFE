@@ -1,15 +1,25 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Modal } from 'bootstrap'
 
 function ProductDetails() {
 
     const [listProductDetail, setlistProductDetail] = useState([]);
     const [formData, setFormData] = useState({
-        ma: "",
-        ten: ""
-    });
+        giaBan: "",
+        soLuong: "",
+        idSanPham: "",
+        idKichCo: "",
+        idKieuDang: "",
+        idMauSac: "",
+        idNsx: "",
+        idThuongHieu: "",
+        image: null
 
+    });
+    console.log(formData);
+
+    const imageRef = useRef(null);
     const [formDataUpdate, setFormDataUpdate] = useState({
         ma: "",
         ten: ""
@@ -23,7 +33,7 @@ function ProductDetails() {
     const [listProduct, setListProduct] = useState([]);
     const [listManuefacturer, setListManuefacturer] = useState([]);
 
-    console.log(listProductDetail);
+    // console.log(listProductDetail);
 
 
 
@@ -100,7 +110,7 @@ function ProductDetails() {
 
 
         //fetch data list Manuefacturer
-        const fetchDataManuefacturer= async () => {
+        const fetchDataManuefacturer = async () => {
             try {
                 const response = await fetch("http://localhost:5050/api/v1/NSX/show-all");
                 const data = await response.json();
@@ -183,8 +193,15 @@ function ProductDetails() {
                 if (modalInstance) {
                     modalInstance.hide(); // Close the modal
                     setFormData({
-                        ma: "",
-                        ten: ""
+                        giaBan: "",
+                        soLuong: "",
+                        idSanPham: "",
+                        idKichCo: "",
+                        idKieuDang: "",
+                        idMauSac: "",
+                        idNsx: "",
+                        idThuongHieu: "",
+                        image: null
                     });
                 }
             }
@@ -237,6 +254,13 @@ function ProductDetails() {
         Modal.getInstance(modalE).hide();
 
     }
+
+    const handleAddImage = () => {
+        setFormData({
+            ...formData,
+            image: imageRef.current.files[0]
+        })
+    }
     return (
         <>
             <h1> ProductDetail Management</h1>
@@ -269,8 +293,15 @@ function ProductDetails() {
                                 <div className='row'>
                                     <div className='mb-2 col-4'>
                                         <label className='form-label'> Chọn Sản Phẩm</label>
-                                        <select className="form-select" aria-label="Default select example">
-                                        {listProduct.map((product) => {
+                                        <select className="form-select"
+                                            aria-label="Default select example"
+                                            name='idSanPham'
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }
+                                            }
+                                        >
+                                            {listProduct.map((product) => {
                                                 return (
                                                     <option
                                                         key={product.id}
@@ -287,8 +318,13 @@ function ProductDetails() {
 
                                     <div className='mb-2 col-3'>
                                         <label className='form-label'> Chọn Kích cỡ</label>
-                                        <select className="form-select" aria-label="Default select example">
-                                        {listSize.map((size) => {
+                                        <select className="form-select" aria-label="Default select example"
+                                            name='idKichCo'
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                        >
+                                            {listSize.map((size) => {
                                                 return (
                                                     <option
                                                         key={size.id}
@@ -301,8 +337,13 @@ function ProductDetails() {
 
                                     <div className='mb-2 col-3'>
                                         <label className='form-label'> Chọn Kiểu Dáng</label>
-                                        <select className="form-select" aria-label="Default select example">
-                                        {listStyle.map((style) => {
+                                        <select className="form-select" aria-label="Default select example"
+                                            name='idKieuDang'
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                        >
+                                            {listStyle.map((style) => {
                                                 return (
                                                     <option
                                                         key={style.id}
@@ -315,7 +356,12 @@ function ProductDetails() {
 
                                     <div className='mb-2 col-3'>
                                         <label className='form-label'> Chọn Màu Sắc </label>
-                                        <select className="form-select" aria-label="Default select example">
+                                        <select className="form-select" aria-label="Default select example"
+                                            name='idMauSac'
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                        >
                                             {listColor.map((color) => {
                                                 return (
                                                     <option
@@ -334,8 +380,13 @@ function ProductDetails() {
 
                                     <div className='mb-2 col-3'>
                                         <label className='form-label'> Nhà Sản Xuất</label>
-                                        <select className="form-select" aria-label="Default select example">
-                                        {listManuefacturer.map((manuefacturer) => {
+                                        <select className="form-select" aria-label="Default select example"
+                                            name='idNsx'
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                        >
+                                            {listManuefacturer.map((manuefacturer) => {
                                                 return (
                                                     <option
                                                         key={manuefacturer.id}
@@ -348,8 +399,13 @@ function ProductDetails() {
 
                                     <div className='mb-2 col-3'>
                                         <label className='form-label'> Chọn Thương Hiệu</label>
-                                        <select className="form-select" aria-label="Default select example">
-                                        {listBrand.map((brand) => {
+                                        <select className="form-select" aria-label="Default select example"
+                                            name='idThuongHieu'
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                        >
+                                            {listBrand.map((brand) => {
                                                 return (
                                                     <option
                                                         key={brand.id}
@@ -371,9 +427,9 @@ function ProductDetails() {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            name='ma'
+                                            name='giaBan'
                                             id="exampleMaProductDetail"
-                                            value={formData.ma}
+                                            value={formData.giaBan}
                                             onChange={(e) => {
                                                 handleInputChange(e);
                                             }}
@@ -385,13 +441,15 @@ function ProductDetails() {
                                     <div className="mb-3 col-3">
                                         <label htmlFor="exampleTenProductDetail" className="form-label">Quantity</label>
                                         <input
-                                            type="text"
+                                            type="number"
                                             className="form-control"
-                                            name='ten'
+                                            name='soLuong'
                                             id="exampleTenProductDetail"
-                                            value={formData.ten}
+                                            value={formData.soLuong}
                                             onChange={(e) => {
                                                 handleInputChange(e);
+                                                console.log(e.target.value);
+
                                             }}
                                             required
                                         ></input>
@@ -402,7 +460,12 @@ function ProductDetails() {
                                 <div className='mb-3 col-5'>
                                     <label className='form-label'>Chọn Ảnh</label>
                                     <br></br>
-                                    <input type='file'></input>
+                                    <input type='file'
+                                        ref={imageRef}
+                                        onChange={() => {
+                                            handleAddImage();
+                                        }}
+                                    ></input>
                                 </div>
 
                                 <br></br>
