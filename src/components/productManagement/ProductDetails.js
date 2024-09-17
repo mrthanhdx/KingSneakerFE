@@ -8,12 +8,14 @@ function ProductDetails() {
     const [formData, setFormData] = useState({
         giaBan: "",
         soLuong: "",
-        idSanPham: "",
-        idKichCo: "",
-        idKieuDang: "",
-        idMauSac: "",
-        idNsx: "",
-        idThuongHieu: "",
+        idSanPham: 1,
+        idKichCo: 1,
+        idKieuDang: 1,
+        idMauSac: 1,
+        idNsx: 1,
+        idThuongHieu: 1,
+        trangThai: 1,
+        idChatLieu: 1,
         image: null
 
     });
@@ -30,6 +32,7 @@ function ProductDetails() {
     const [listBrand, setListBrand] = useState([]);
     const [listStyle, setListStyle] = useState([]);
     const [listSize, setListSize] = useState([]);
+    const [listMaterial, setListMaterial] = useState([]);
     const [listProduct, setListProduct] = useState([]);
     const [listManuefacturer, setListManuefacturer] = useState([]);
 
@@ -80,6 +83,21 @@ function ProductDetails() {
         }
         fetchDataColor();
 
+
+        //fetch data list Chat Lieu
+
+        const fetchDataMaterial = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/chat-lieu/show-all");
+                const data = await response.json();
+                setListMaterial(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataMaterial();
+        
 
         //fetch data list size
         const fetchDataSize = async () => {
@@ -195,13 +213,16 @@ function ProductDetails() {
                     setFormData({
                         giaBan: "",
                         soLuong: "",
-                        idSanPham: "",
-                        idKichCo: "",
-                        idKieuDang: "",
-                        idMauSac: "",
-                        idNsx: "",
-                        idThuongHieu: "",
+                        idSanPham: 1,
+                        idKichCo: 1,
+                        idKieuDang: 1,
+                        idMauSac: 1,
+                        idNsx: 1,
+                        idThuongHieu: 1,
+                        idChatLieu:1,
+                        trangThai: 1,
                         image: null
+
                     });
                 }
             }
@@ -416,6 +437,24 @@ function ProductDetails() {
                                         </select>
                                     </div>
 
+                                    <div className='mb-2 col-3'>
+                                        <label className='form-label'> Chọn Chất Liệu</label>
+                                        <select className="form-select" aria-label="Default select example"
+                                            name='idChatLieu'
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                            }}
+                                        >
+                                            {listMaterial.map((material) => {
+                                                return (
+                                                    <option
+                                                        key={material.id}
+                                                        value={material.id}
+                                                    >{material.ten}</option>
+                                                )
+                                            })}
+                                        </select>
+                                    </div>
 
 
                                 </div>
@@ -534,6 +573,7 @@ function ProductDetails() {
                         <th scope="col">Size</th>
                         <th scope="col">Style</th>
                         <th scope="col">Color</th>
+                        <th scope="col">Material</th>
                         <th scope="col">Brand</th>
                         <th scope="col">Manuefacturer</th>
                         <th scope="col">Price</th>
@@ -553,6 +593,7 @@ function ProductDetails() {
                                 <td>{ProductDetail.kichCo}</td>
                                 <td>{ProductDetail.kieuDang}</td>
                                 <td>{ProductDetail.mauSac}</td>
+                                <td>{ProductDetail.chatLieu}</td>
                                 <td>{ProductDetail.thuongHieu}</td>
                                 <td>{ProductDetail.nsx}</td>
                                 <td>{ProductDetail.giaBan}</td>
