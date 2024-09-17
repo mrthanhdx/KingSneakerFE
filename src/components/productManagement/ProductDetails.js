@@ -6,8 +6,8 @@ function ProductDetails() {
 
     const [listProductDetail, setlistProductDetail] = useState([]);
     const [formData, setFormData] = useState({
-        giaBan: "",
-        soLuong: "",
+        giaBan: 0,
+        soLuong: 0,
         idSanPham: 1,
         idKichCo: 1,
         idKieuDang: 1,
@@ -16,9 +16,9 @@ function ProductDetails() {
         idThuongHieu: 1,
         trangThai: 1,
         idChatLieu: 1,
-        image: null
-
     });
+
+    const [imageAdd,setImageAdd] = useState(null);
     console.log(formData);
 
     const imageRef = useRef(null);
@@ -36,9 +36,10 @@ function ProductDetails() {
     const [listProduct, setListProduct] = useState([]);
     const [listManuefacturer, setListManuefacturer] = useState([]);
 
-    // console.log(listProductDetail);
 
 
+    console.log(listProductDetail);
+    
 
     useEffect(() => {
 
@@ -97,7 +98,7 @@ function ProductDetails() {
             }
         }
         fetchDataMaterial();
-        
+
 
         //fetch data list size
         const fetchDataSize = async () => {
@@ -194,16 +195,34 @@ function ProductDetails() {
         const submitData = async () => {
             console.log(123);
 
+
+
+            const formDataObj = new FormData();
+
+            // Append all form data fields to the FormData object
+            formDataObj.append("details", JSON.stringify(formData));
+            
+
+            // Append the image file
+            if (imageAdd) {
+                formDataObj.append("image", imageAdd);
+            }
+
+
+
+
+
+
             const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/new-chi-tiet-san-pham", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-
-            const data = await response.json();
-            setlistProductDetail([...listProductDetail, data]);
+                body: formDataObj,  // Pass the FormData object
+               
+            });
+            if (response.ok) {
+                const data = await response.json(); 
+                 setlistProductDetail([...listProductDetail, data]);
+            }
+            
             // Close the modal after successful submission
             const modalElement = document.getElementById('modalAdd');
             if (modalElement) {
@@ -219,11 +238,10 @@ function ProductDetails() {
                         idMauSac: 1,
                         idNsx: 1,
                         idThuongHieu: 1,
-                        idChatLieu:1,
+                        idChatLieu: 1,
                         trangThai: 1,
-                        image: null
-
                     });
+                    setImageAdd(null);
                 }
             }
         }
@@ -277,10 +295,9 @@ function ProductDetails() {
     }
 
     const handleAddImage = () => {
-        setFormData({
-            ...formData,
-            image: imageRef.current.files[0]
-        })
+        setImageAdd(
+             imageRef.current.files[0]
+        )
     }
     return (
         <>
@@ -578,7 +595,6 @@ function ProductDetails() {
                         <th scope="col">Manuefacturer</th>
                         <th scope="col">Price</th>
                         <th scope="col">Quantity</th>
-
                         <th scope="col">Action</th>
                         <th scope="col">Status</th>
                     </tr>
