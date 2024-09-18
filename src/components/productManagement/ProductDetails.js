@@ -5,6 +5,18 @@ import { Modal } from 'bootstrap'
 function ProductDetails() {
 
     const [listProductDetail, setlistProductDetail] = useState([]);
+
+
+
+    const [listColor, setListColor] = useState([]);
+    const [listBrand, setListBrand] = useState([]);
+    const [listStyle, setListStyle] = useState([]);
+    const [listSize, setListSize] = useState([]);
+    const [listMaterial, setListMaterial] = useState([]);
+    const [listProduct, setListProduct] = useState([]);
+    const [listManuefacturer, setListManuefacturer] = useState([]);
+
+
     const [formData, setFormData] = useState({
         giaBan: 0,
         soLuong: 0,
@@ -18,8 +30,9 @@ function ProductDetails() {
         idChatLieu: 1,
     });
 
-    const [imageAdd,setImageAdd] = useState(null);
-    console.log(formData);
+
+    const [imageAdd, setImageAdd] = useState(null);
+    // console.log(formData);
 
     const imageRef = useRef(null);
     const [formDataUpdate, setFormDataUpdate] = useState({
@@ -27,19 +40,17 @@ function ProductDetails() {
         ten: ""
     });
 
+    const [errorValidateMessage, setErrorValidateMessage] = useState({
+        isImageAddValid: false,
+        imageValid: "",
+        soLuongValid: "",
+        giaBanValid: "",
+        isValidSoLuong: false,
+        isValidGiaBan: false
+    })
 
-    const [listColor, setListColor] = useState([]);
-    const [listBrand, setListBrand] = useState([]);
-    const [listStyle, setListStyle] = useState([]);
-    const [listSize, setListSize] = useState([]);
-    const [listMaterial, setListMaterial] = useState([]);
-    const [listProduct, setListProduct] = useState([]);
-    const [listManuefacturer, setListManuefacturer] = useState([]);
+    // console.log(listProductDetail);
 
-
-
-    console.log(listProductDetail);
-    
 
     useEffect(() => {
 
@@ -190,63 +201,106 @@ function ProductDetails() {
     }
 
     const submitForm = (e) => {
-
         e.preventDefault();
-        const submitData = async () => {
-            console.log(123);
+
+        // Local validation flags
+        let isValidGiaBan = true;
+        let isValidSoLuong = true;
+        let isImageAddValid = errorValidateMessage.isImageAddValid;
+        let giaBanValid = "";
+        let soLuongValid = "";
+        let imageValid = errorValidateMessage.imageValid;
+
+        // Convert form inputs to numbers before validating
+        const giaBan = Number(formData.giaBan);
+        const soLuong = Number(formData.soLuong);
 
 
-
-            const formDataObj = new FormData();
-
-            // Append all form data fields to the FormData object
-            formDataObj.append("details", JSON.stringify(formData));
-            
-
-            // Append the image file
-            if (imageAdd) {
-                formDataObj.append("image", imageAdd);
-            }
-
-
-
-
-
-
-            const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/new-chi-tiet-san-pham", {
-                method: "POST",
-                body: formDataObj,  // Pass the FormData object
-               
-            });
-            if (response.ok) {
-                const data = await response.json(); 
-                 setlistProductDetail([...listProductDetail, data]);
-            }
-            
-            // Close the modal after successful submission
-            const modalElement = document.getElementById('modalAdd');
-            if (modalElement) {
-                const modalInstance = Modal.getInstance(modalElement); // Access global `bootstrap` object
-                if (modalInstance) {
-                    modalInstance.hide(); // Close the modal
-                    setFormData({
-                        giaBan: "",
-                        soLuong: "",
-                        idSanPham: 1,
-                        idKichCo: 1,
-                        idKieuDang: 1,
-                        idMauSac: 1,
-                        idNsx: 1,
-                        idThuongHieu: 1,
-                        idChatLieu: 1,
-                        trangThai: 1,
-                    });
-                    setImageAdd(null);
-                }
-            }
+        //validate image
+        if (imageAdd == null) {
+            isImageAddValid = false;
+            imageValid = "Image can not be null";
         }
-        submitData();
-    }
+
+        // Validate giaBan
+        if (giaBan <= 0 || isNaN(giaBan)) {
+            giaBanValid = "Gia Ban is invalid";
+            isValidGiaBan = false;
+        }
+
+        // Validate soLuong
+        if (soLuong <= 0 || isNaN(soLuong)) {
+            soLuongValid = "So Luong is invalid";
+            isValidSoLuong = false;
+        }
+
+        // Update error messages state
+        setErrorValidateMessage({
+            giaBanValid,
+            soLuongValid,
+            isValidGiaBan,
+            isValidSoLuong,
+            isImageAddValid,
+            imageValid
+        });
+
+
+        // If both are valid, proceed with form submission
+        if (isValidGiaBan && isValidSoLuong && isImageAddValid) {
+            const submitData = async () => {
+                const formDataObj = new FormData();
+
+                // Append form data and image
+                formDataObj.append("details", JSON.stringify(formData));
+                if (imageAdd) {
+                    formDataObj.append("image", imageAdd);
+                }
+
+                try {
+                    const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/new-chi-tiet-san-pham", {
+                        method: "POST",
+                        body: formDataObj,
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setlistProductDetail([...listProductDetail, data]);
+                    } else {
+                        const errorMessage = await response.text();
+                        console.log(errorMessage);  // Log or show the error message
+                    }
+
+                    // Close the modal if form submission is successful
+                    const modalElement = document.getElementById('modalAdd');
+                    if (modalElement) {
+                        const modalInstance = Modal.getInstance(modalElement);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                            // Reset form after submission
+                            setFormData({
+                                giaBan: 0,
+                                soLuong: 0,
+                                idSanPham: 1,
+                                idKichCo: 1,
+                                idKieuDang: 1,
+                                idMauSac: 1,
+                                idNsx: 1,
+                                idThuongHieu: 1,
+                                idChatLieu: 1,
+                                trangThai: 1,
+                            });
+                            setImageAdd(null);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Submission error:", error);
+                }
+            };
+
+            submitData();
+        }
+    };
+
 
 
     // const deleteProductDetail = (id) => {
@@ -294,10 +348,23 @@ function ProductDetails() {
 
     }
 
-    const handleAddImage = () => {
-        setImageAdd(
-             imageRef.current.files[0]
-        )
+    const handleImageChage = (e) => {
+        let file = imageRef.current.files[0];
+        setImageAdd(file);
+        if (file !== null && file !== undefined) {
+            let fileName = file.name;
+            let fileType = fileName.substr(fileName.lastIndexOf('.') + 1);
+            let messageError = "";
+            if (fileType.toLowerCase() !== "jpg" && fileType.toLowerCase() !== "png") {
+                messageError = "file type is not valid !";
+            }
+            setErrorValidateMessage({
+                ...errorValidateMessage,
+                isImageAddValid: false,
+                imageValid: messageError
+            });
+        }
+
     }
     return (
         <>
@@ -477,51 +544,57 @@ function ProductDetails() {
                                 </div>
 
                                 <br></br>
-                                <div className='row'>
-                                    <div className="mb-3 col-3">
-                                        <label htmlFor="exampleMaProductDetail" className="form-label">Price</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            name='giaBan'
-                                            id="exampleMaProductDetail"
-                                            value={formData.giaBan}
-                                            onChange={(e) => {
-                                                handleInputChange(e);
-                                            }}
-                                            required
 
-                                        ></input>
-                                    </div>
-                                    <br></br>
-                                    <div className="mb-3 col-3">
-                                        <label htmlFor="exampleTenProductDetail" className="form-label">Quantity</label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            name='soLuong'
-                                            id="exampleTenProductDetail"
-                                            value={formData.soLuong}
-                                            onChange={(e) => {
-                                                handleInputChange(e);
-                                                console.log(e.target.value);
+                                <div className="mb-3 col-3">
+                                    <label htmlFor="exampleMaProductDetail" className="form-label">Price</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        name='giaBan'
+                                        id="exampleMaProductDetail"
+                                        value={formData.giaBan}
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                        }}
+                                    // required
 
-                                            }}
-                                            required
-                                        ></input>
-                                    </div>
+                                    ></input>
+                                    <span className='text-danger'>{errorValidateMessage.giaBanValid}</span>
+                                </div>
+                                <br></br>
+                                <div className="mb-3 col-3">
+                                    <label htmlFor="exampleTenProductDetail" className="form-label">Quantity</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        name='soLuong'
+                                        id="exampleTenProductDetail"
+                                        value={formData.soLuong}
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                            console.log(e.target.value);
+
+                                        }}
+                                    // required
+                                    ></input>
+                                    <span className='text-danger'>{errorValidateMessage.soLuongValid}</span>
                                 </div>
 
+
                                 <br></br>
-                                <div className='mb-3 col-5'>
-                                    <label className='form-label'>Chọn Ảnh</label>
-                                    <br></br>
-                                    <input type='file'
-                                        ref={imageRef}
-                                        onChange={() => {
-                                            handleAddImage();
-                                        }}
-                                    ></input>
+                                <div className='row'>
+                                    <div className='mb-3 col-5'>
+                                        <label className='form-label'>Chọn Ảnh</label>
+                                        <br></br>
+                                        <input type='file'
+                                            ref={imageRef}
+                                            onChange={(e) => {
+                                                handleImageChage(e);
+                                            }}
+                                        ></input>
+                                    </div>
+                                    <span className='text-danger'>{errorValidateMessage.imageValid}</span>
+
                                 </div>
 
                                 <br></br>
