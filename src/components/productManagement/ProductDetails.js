@@ -27,18 +27,35 @@ function ProductDetails() {
         idNsx: 1,
         idThuongHieu: 1,
         trangThai: 1,
-        idChatLieu: 1,
+        idChatLieu: 1
     });
+
+    // console.log(formDataUpdate);
 
 
     const [imageAdd, setImageAdd] = useState(null);
     // console.log(formData);
 
-    const imageRef = useRef(null);
+    const [imageUpdate, setImageUpdate] = useState(null);
+
+    const imageAddRef = useRef(null);
+    const imageUpdateRef = useRef(null);
+
+
     const [formDataUpdate, setFormDataUpdate] = useState({
-        ma: "",
-        ten: ""
+        giaBan: 0,
+        soLuong: 0,
+        idSanPham: 1,
+        idKichCo: 1,
+        idKieuDang: 1,
+        idMauSac: 1,
+        idNsx: 1,
+        idThuongHieu: 1,
+        trangThai: 1,
+        idChatLieu: 1
     });
+
+    console.log(formDataUpdate);
 
     const [errorValidateMessage, setErrorValidateMessage] = useState({
         isImageAddValid: false,
@@ -49,7 +66,15 @@ function ProductDetails() {
         isValidGiaBan: false
     })
 
-    // console.log(listProductDetail);
+    const [errorValidateUpdateMessage, setErrorValidateUpdateMessage] = useState({
+        isImageUpdateValid: false,
+        imageValid: "",
+        soLuongValid: "",
+        giaBanValid: "",
+        isValidSoLuong: false,
+        isValidGiaBan: false
+    })
+    // console.log(formDataUpdate);
 
 
     useEffect(() => {
@@ -206,10 +231,10 @@ function ProductDetails() {
         // Local validation flags
         let isValidGiaBan = true;
         let isValidSoLuong = true;
-        let isImageAddValid = errorValidateMessage.isImageAddValid;
+        let isImageAddValid = true;
         let giaBanValid = "";
         let soLuongValid = "";
-        let imageValid = errorValidateMessage.imageValid;
+        let imageValid ='';
 
         // Convert form inputs to numbers before validating
         const giaBan = Number(formData.giaBan);
@@ -244,7 +269,8 @@ function ProductDetails() {
             imageValid
         });
 
-
+        console.log(isValidGiaBan,isValidSoLuong,isImageAddValid);
+        
         // If both are valid, proceed with form submission
         if (isValidGiaBan && isValidSoLuong && isImageAddValid) {
             const submitData = async () => {
@@ -303,53 +329,121 @@ function ProductDetails() {
 
 
 
-    // const deleteProductDetail = (id) => {
-    //     const delProductDetail = async () => {
-    //         try {
-    //             const response = await fetch(`http://localhost:5050/api/v1/chi-tiet-san-pham/delete-chi-tiet-san-pham/${id}`, {
-    //                 method: "DELETE",
-    //             });
-    //             const data = await response.json();
-    //             console.log(data);
-
-    //             refreshlistProductDetail();
-
-    //         } catch (error) {
-    //             console.error(error);
-    //         }
-    //     }
-    //     delProductDetail();
-
-    // }
-
     const updateProductDetail = (e, id) => {
         e.preventDefault();
-        const updateData = async () => {
-            try {
-                const response = await fetch(`http://localhost:5050/api/v1/chi-tiet-san-pham/update-chi-tiet-san-pham/${id}`, {
-                    method: "PUT",
-                    body: JSON.stringify(formDataUpdate),
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                })
 
-                const data = await response.json();
-                console.log("Update successful:", data);
-                refreshlistProductDetail();
+        // Local validation flags
+        let isValidGiaBan = true;
+        let isValidSoLuong = true;
+        let isImageAddValid = errorValidateUpdateMessage.isImageUpdateValid;
+        let giaBanValid = "";
+        let soLuongValid = "";
+        let imageValid = errorValidateUpdateMessage.imageValid;
 
-            } catch (error) {
-                console.error(error);
-            }
+        // Convert form inputs to numbers before validating
+        const giaBan = Number(formDataUpdate.giaBan);
+        const soLuong = Number(formDataUpdate.soLuong);
+
+
+        //validate image
+        if (imageUpdate == null) {
+            console.log(imageUpdate);
+
+            isImageAddValid = false;
+            imageValid = "Image can not be null";
+        } else {
+            imageValid = "OK";
+            isImageAddValid = true;
+
+
         }
-        updateData();
-        let modalE = document.getElementById(`exampleModal-${id}`);
-        Modal.getInstance(modalE).hide();
+
+        // Validate giaBan
+        if (giaBan <= 0 || isNaN(giaBan)) {
+            giaBanValid = "Gia Ban is invalid";
+            isValidGiaBan = false;
+        }
+
+        // Validate soLuong
+        if (soLuong <= 0 || isNaN(soLuong)) {
+            soLuongValid = "So Luong is invalid";
+            isValidSoLuong = false;
+        }
+
+        // Update error messages state
+        setErrorValidateUpdateMessage({
+            giaBanValid,
+            soLuongValid,
+            isValidGiaBan,
+            isValidSoLuong,
+            isImageAddValid,
+            imageValid
+        });
+
+
+        // If both are valid, proceed with form submission
+        if (isValidGiaBan && isValidSoLuong && isImageAddValid) {
+            const updateData = async () => {
+                const formDataObj = new FormData();
+
+                // Append form data and image
+                formDataObj.append("details", JSON.stringify(formDataUpdate));
+                if (imageUpdate) {
+                    formDataObj.append("image", imageUpdate);
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:5050/api/v1/chi-tiet-san-pham/update-chi-tiet-san-pham/${id}`, {
+                        method: "PUT",
+                        body: formDataObj,
+                        
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setlistProductDetail([...listProductDetail, data]);
+                        refreshlistProductDetail();
+                    } else {
+                        const errorMessage = await response.text();
+                        console.log(errorMessage);  // Log or show the error message
+                    }
+
+                    // Close the modal if form submission is successful
+                    const modalElement = document.getElementById(`exampleModal-${id}`);
+                    if (modalElement) {
+                        const modalInstance = Modal.getInstance(modalElement);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                            // Reset form after submission
+                            setFormDataUpdate({
+                                giaBan: 0,
+                                soLuong: 0,
+                                idSanPham: 1,
+                                idKichCo: 1,
+                                idKieuDang: 1,
+                                idMauSac: 1,
+                                idNsx: 1,
+                                idThuongHieu: 1,
+                                idChatLieu: 1,
+                                trangThai: 1,
+                            });
+                            setImageUpdate(null);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Update error:", error);
+                }
+            };
+
+            updateData();
+        }
+        // let modalE = document.getElementById(`exampleModal-${id}`);
+        // Modal.getInstance(modalE).hide();
 
     }
 
-    const handleImageChage = (e) => {
-        let file = imageRef.current.files[0];
+    const handleImageChange = () => {
+        let file = imageAddRef.current.files[0];
         setImageAdd(file);
         if (file !== null && file !== undefined) {
             let fileName = file.name;
@@ -365,6 +459,65 @@ function ProductDetails() {
             });
         }
 
+    }
+    // console.log(imageUpdate);
+    // console.log(imageAdd);
+
+
+    const handleImageUpdateChange = (e) => {
+        let file = e.target.files[0];
+
+        console.log(file);
+
+        setImageUpdate(file);
+
+        if (file !== null && file !== undefined) {
+            let fileName = file.name;
+            let fileType = fileName.substr(fileName.lastIndexOf('.') + 1);
+            let messageError = "";
+            if (fileType.toLowerCase() !== "jpg" && fileType.toLowerCase() !== "png") {
+                messageError = "file type is not valid !";
+            } else {
+            }
+            setErrorValidateUpdateMessage({
+                ...errorValidateUpdateMessage,
+                isImageUpdateValid: false,
+                imageValid: messageError
+            });
+        }
+
+    }
+
+
+    const handleSetFormDataUpdate = (productDetail) => {
+        const { giaBan, soLuong, idSanPham, idKichCo, idKieuDang, idMauSac, idNsx, idThuongHieu, idChatLieu, trangThai } = productDetail;
+        setFormDataUpdate({
+            giaBan,
+            soLuong,
+            idSanPham,
+            idKichCo,
+            idKieuDang,
+            idMauSac,
+            idNsx,
+            idThuongHieu,
+            idChatLieu,
+            trangThai
+        })
+        if (giaBan <= 0 || isNaN(giaBan)) {
+            errorValidateUpdateMessage.giaBanValid = "Gia Ban is invalid";
+            errorValidateUpdateMessage.isValidGiaBan = false;
+        } else {
+            errorValidateUpdateMessage.giaBanValid = "";
+            errorValidateUpdateMessage.isValidGiaBan = true;
+        }
+
+        if (soLuong <= 0 || isNaN(soLuong)) {
+            errorValidateUpdateMessage.soLuongValid = "So Luong is invalid";
+            errorValidateUpdateMessage.isValidSoLuong = false;
+        } else {
+            errorValidateUpdateMessage.soLuongValid = "";
+            errorValidateUpdateMessage.isValidSoLuong = true;
+        }
     }
     return (
         <>
@@ -587,9 +740,9 @@ function ProductDetails() {
                                         <label className='form-label'>Chọn Ảnh</label>
                                         <br></br>
                                         <input type='file'
-                                            ref={imageRef}
+                                            ref={imageAddRef}
                                             onChange={(e) => {
-                                                handleImageChage(e);
+                                                handleImageChange(e);
                                             }}
                                         ></input>
                                     </div>
@@ -657,7 +810,7 @@ function ProductDetails() {
             <table className="table">
                 <thead>
                     <tr>
-                        <th scope="col">STT</th>
+                        <th scope="col">ID</th>
                         <th scope="col">Tên Sản Phẩm</th>
                         <th scope="col">Hình ảnh</th>
                         <th scope="col">Size</th>
@@ -675,10 +828,11 @@ function ProductDetails() {
                 <tbody>
                     {listProductDetail.map((ProductDetail, index) => {
                         return (
-                            <tr key={ProductDetail.id}>
-                                <th scope="row">{index}</th>
+                            <tr key={index}>
+                                <th scope="row">{ProductDetail.id}</th>
                                 <td>{ProductDetail.tenSanPham}</td>
-                                <td><img src={ProductDetail.pathHinhAnh} alt='anh giay sneaker'></img></td>
+                                <td><img src={
+                                    ProductDetail.pathHinhAnh} alt='anh giay sneaker'></img></td>
                                 <td>{ProductDetail.kichCo}</td>
                                 <td>{ProductDetail.kieuDang}</td>
                                 <td>{ProductDetail.mauSac}</td>
@@ -705,82 +859,258 @@ function ProductDetails() {
                                         data-bs-toggle="modal"
                                         data-bs-target={`#exampleModal-${ProductDetail.id}`}
                                         onClick={() => {
-                                            setFormDataUpdate(ProductDetail);
+                                            handleSetFormDataUpdate(ProductDetail);
                                         }}
                                     >Update</a>
                                     {/* modal update */}
                                     <div className="modal fade" id={`exampleModal-${ProductDetail.id}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <div className="modal-content">
+                                        <div className="modal-dialog" style={{ width: "100%", margin: "30px 300px" }}>
+                                            <div className="modal-content" style={{ width: "1000px" }}>
                                                 <div className="modal-header">
                                                     <h1 className="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <div className="modal-body">
-                                                    <form onSubmit={(e) => {
-                                                        // e.preventDefault();
+                                                <div className="modal-body" >
+                                                    <form method='PUT' onSubmit={(e) => {
                                                         updateProductDetail(e, ProductDetail.id);
-                                                    }}>
-                                                        <div className='mb-3'>
+                                                    }}
+                                                    >
+                                                        <br></br>
 
-                                                            <h1>ID: {ProductDetail.id}</h1>
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <label htmlFor="exampleMaProductDetail" className="form-label">Mã ProductDetail</label>
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                name='ma'
-                                                                id="exampleMaProductDetail"
-                                                                value={formDataUpdate.ma}
-                                                                onChange={(e) => {
-                                                                    handleInputUpdateChange(e);
-                                                                }}
-                                                                required
-                                                            ></input>
+                                                        <div className='row'>
+                                                            <div className='mb-2 col-4'>
+                                                                <label className='form-label'> Chọn Sản Phẩm</label>
+                                                                <select className="form-select"
+                                                                    aria-label="Default select example"
+                                                                    name='idSanPham'
+                                                                    onChange={(e) => {
+                                                                        handleInputUpdateChange(e);
+                                                                    }
+                                                                    }
+                                                                >
+                                                                    {listProduct.map((product) => {
+                                                                        return (
+                                                                            <option
+                                                                                key={product.id}
+                                                                                value={product.id}
+                                                                            >{product.ten}</option>
+                                                                        )
+                                                                    })}
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                         <br></br>
-                                                        <div className="mb-3">
-                                                            <label htmlFor="exampleTenProductDetail" className="form-label">Tên ProductDetail</label>
+
+                                                        <div className='row'>
+
+                                                            <div className='mb-2 col-3'>
+                                                                <label className='form-label'> Chọn Kích cỡ</label>
+                                                                <select className="form-select" aria-label="Default select example"
+                                                                    name='idKichCo'
+                                                                    onChange={(e) => {
+                                                                        handleInputUpdateChange(e);
+                                                                    }}
+                                                                >
+                                                                    {listSize.map((size) => {
+                                                                        return (
+                                                                            <option
+                                                                                key={size.id}
+                                                                                value={size.id}
+                                                                            >{size.ten}</option>
+                                                                        )
+                                                                    })}
+                                                                </select>
+                                                            </div>
+
+                                                            <div className='mb-2 col-3'>
+                                                                <label className='form-label'> Chọn Kiểu Dáng</label>
+                                                                <select className="form-select" aria-label="Default select example"
+                                                                    name='idKieuDang'
+                                                                    onChange={(e) => {
+                                                                        handleInputUpdateChange(e);
+                                                                    }}
+                                                                >
+                                                                    {listStyle.map((style) => {
+                                                                        return (
+                                                                            <option
+                                                                                key={style.id}
+                                                                                value={style.id}
+                                                                            >{style.ten}</option>
+                                                                        )
+                                                                    })}
+                                                                </select>
+                                                            </div>
+
+                                                            <div className='mb-2 col-3'>
+                                                                <label className='form-label'> Chọn Màu Sắc </label>
+                                                                <select className="form-select" aria-label="Default select example"
+                                                                    name='idMauSac'
+                                                                    onChange={(e) => {
+                                                                        handleInputUpdateChange(e);
+                                                                    }}
+                                                                >
+                                                                    {listColor.map((color) => {
+                                                                        return (
+                                                                            <option
+                                                                                key={color.id}
+                                                                                value={color.id}
+                                                                            >{color.ten}</option>
+                                                                        )
+                                                                    })}
+                                                                </select>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <br></br>
+                                                        <div className='row'>
+
+                                                            <div className='mb-2 col-3'>
+                                                                <label className='form-label'> Nhà Sản Xuất</label>
+                                                                <select className="form-select" aria-label="Default select example"
+                                                                    name='idNsx'
+                                                                    onChange={(e) => {
+                                                                        handleInputUpdateChange(e);
+                                                                    }}
+                                                                >
+                                                                    {listManuefacturer.map((manuefacturer) => {
+                                                                        return (
+                                                                            <option
+                                                                                key={manuefacturer.id}
+                                                                                value={manuefacturer.id}
+                                                                            >{manuefacturer.ten}</option>
+                                                                        )
+                                                                    })}
+                                                                </select>
+                                                            </div>
+
+                                                            <div className='mb-2 col-3'>
+                                                                <label className='form-label'> Chọn Thương Hiệu</label>
+                                                                <select className="form-select" aria-label="Default select example"
+                                                                    name='idThuongHieu'
+                                                                    onChange={(e) => {
+                                                                        handleInputUpdateChange(e);
+                                                                    }}
+                                                                >
+                                                                    {listBrand.map((brand) => {
+                                                                        return (
+                                                                            <option
+                                                                                key={brand.id}
+                                                                                value={brand.id}
+                                                                            >{brand.ten}</option>
+                                                                        )
+                                                                    })}
+                                                                </select>
+                                                            </div>
+
+                                                            <div className='mb-2 col-3'>
+                                                                <label className='form-label'> Chọn Chất Liệu</label>
+                                                                <select className="form-select" aria-label="Default select example"
+                                                                    name='idChatLieu'
+                                                                    onChange={(e) => {
+                                                                        handleInputUpdateChange(e);
+                                                                    }}
+                                                                >
+                                                                    {listMaterial.map((material) => {
+                                                                        return (
+                                                                            <option
+                                                                                key={material.id}
+                                                                                value={material.id}
+                                                                            >{material.ten}</option>
+                                                                        )
+                                                                    })}
+                                                                </select>
+                                                            </div>
+
+
+                                                        </div>
+
+                                                        <br></br>
+
+                                                        <div className="mb-3 col-3">
+                                                            <label htmlFor="exampleMaProductDetail" className="form-label">Price</label>
                                                             <input
-                                                                type="text"
+                                                                type="number"
                                                                 className="form-control"
-                                                                name='ten'
-                                                                id="exampleTenProductDetail"
-                                                                value={formDataUpdate.ten}
+                                                                name='giaBan'
+                                                                id="exampleMaProductDetail"
+                                                                value={formDataUpdate.giaBan}
                                                                 onChange={(e) => {
                                                                     handleInputUpdateChange(e);
                                                                 }}
-                                                                required
+                                                            // required
+
                                                             ></input>
+                                                            <span className='text-danger'>{errorValidateUpdateMessage.giaBanValid}</span>
+                                                        </div>
+                                                        <br></br>
+                                                        <div className="mb-3 col-3">
+                                                            <label htmlFor="exampleTenProductDetail" className="form-label">Quantity</label>
+                                                            <input
+                                                                type="number"
+                                                                className="form-control"
+                                                                name='soLuong'
+                                                                id="exampleTenProductDetail"
+                                                                value={formDataUpdate.soLuong}
+                                                                onChange={(e) => {
+                                                                    handleInputUpdateChange(e);
+                                                                    console.log(e.target.value);
+
+                                                                }}
+                                                            // required
+                                                            ></input>
+                                                            <span className='text-danger'>{errorValidateUpdateMessage.soLuongValid}</span>
                                                         </div>
 
-                                                        <div className='mb-3 row'
-                                                            style={{ justifyContent: "center" }}
-                                                        >
 
-                                                            <div className="form-check col-3">
+                                                        <br></br>
+                                                        <div className='row'>
+                                                            <div className='mb-3 col-5'>
+                                                                <label className='form-label'>Chọn Ảnh</label>
+                                                                <br></br>
+                                                                <input type='file'
+                                                                    name='inputImageUpdate'
+                                                                    ref={imageUpdateRef}
+                                                                    onChange={(e) => {
+                                                                        console.log(e.target.files);
+
+                                                                        handleImageUpdateChange(e);
+                                                                    }}
+                                                                ></input>
+                                                            </div>
+                                                            <span className='text-danger'>{errorValidateUpdateMessage.imageValid}</span>
+
+                                                        </div>
+
+                                                        <br></br>
+
+                                                        <div className='mb-3 row col-10'
+                                                        // style={{ justifyContent: "center" }}
+                                                        >
+                                                            <div className="form-check col-2"
+                                                                style={{ marginLeft: "40px" }}
+                                                            >
                                                                 <input
                                                                     className="form-check-input"
                                                                     type="radio" name="trangThai"
                                                                     value="1" id="flexRadioDefault1"
                                                                     defaultChecked
                                                                     onClick={(e) => {
-                                                                        handleInputChange(e);
+                                                                        handleInputUpdateChange(e);
                                                                     }}
                                                                 ></input>
                                                                 <label className="form-check-label" htmlFor="flexRadioDefault1">
                                                                     Sẵn Hàng
                                                                 </label>
                                                             </div>
-                                                            <div className="form-check col-3">
+                                                            <div className="form-check col-2">
                                                                 <input
                                                                     className="form-check-input"
                                                                     type="radio" name="trangThai"
                                                                     value="0"
                                                                     id="flexRadioDefault2"
                                                                     onClick={(e) => {
-                                                                        handleInputChange(e);
+                                                                        handleInputUpdateChange(e);
                                                                     }}
                                                                 ></input>
                                                                 <label className="form-check-label" htmlFor="flexRadioDefault2">
@@ -788,6 +1118,7 @@ function ProductDetails() {
                                                                 </label>
                                                             </div>
                                                         </div>
+
 
                                                         <button type="submit" className="btn btn-primary">Submit</button>
                                                     </form>
