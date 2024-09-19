@@ -55,7 +55,10 @@ function ProductDetails() {
         idChatLieu: 1
     });
 
-    console.log(formDataUpdate);
+
+    console.log(listProductDetail);
+    
+    // console.log(formDataUpdate);
 
     const [errorValidateMessage, setErrorValidateMessage] = useState({
         isImageAddValid: false,
