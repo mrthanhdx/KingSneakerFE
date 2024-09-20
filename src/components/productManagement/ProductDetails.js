@@ -27,7 +27,7 @@ function ProductDetails() {
         idNsx: 1,
         idThuongHieu: 1,
         trangThai: 1,
-        idChatLieu: 1
+        idChatLieu: 1,
     });
 
     // console.log(formDataUpdate);
@@ -56,8 +56,8 @@ function ProductDetails() {
     });
 
 
-    console.log(listProductDetail);
-    
+    // console.log(listProductDetail);
+
     // console.log(formDataUpdate);
 
     const [errorValidateMessage, setErrorValidateMessage] = useState({
@@ -79,6 +79,8 @@ function ProductDetails() {
     })
     // console.log(formDataUpdate);
 
+    console.log(listProductDetail);
+    
 
     useEffect(() => {
 
@@ -237,7 +239,7 @@ function ProductDetails() {
         let isImageAddValid = true;
         let giaBanValid = "";
         let soLuongValid = "";
-        let imageValid ='';
+        let imageValid = '';
 
         // Convert form inputs to numbers before validating
         const giaBan = Number(formData.giaBan);
@@ -272,8 +274,8 @@ function ProductDetails() {
             imageValid
         });
 
-        console.log(isValidGiaBan,isValidSoLuong,isImageAddValid);
-        
+        console.log(isValidGiaBan, isValidSoLuong, isImageAddValid);
+
         // If both are valid, proceed with form submission
         if (isValidGiaBan && isValidSoLuong && isImageAddValid) {
             const submitData = async () => {
@@ -281,8 +283,33 @@ function ProductDetails() {
 
                 // Append form data and image
                 formDataObj.append("details", JSON.stringify(formData));
+
+                /*
+                giaBan: 0,
+        soLuong: 0,
+        idSanPham: 1,
+        idKichCo: 1,
+        idKieuDang: 1,
+        idMauSac: 1,
+        idNsx: 1,
+        idThuongHieu: 1,
+        trangThai: 1,
+        idChatLieu: 1
+                */
                 if (imageAdd) {
-                    formDataObj.append("image", imageAdd);
+                    console.log(imageAdd);
+                    
+                    formDataObj.append("idSanPham", formData.idSanPham);
+                    formDataObj.append("idKichCo", formData.idKichCo);
+                    formDataObj.append("idKieuDang", formData.idKieuDang);
+                    formDataObj.append("idMauSac", formData.idMauSac);
+                    formDataObj.append("idNsx", formData.idNsx);
+                    formDataObj.append("idThuongHieu", formData.idThuongHieu);
+                    formDataObj.append("trangThai", formData.trangThai);
+                    formDataObj.append("idChatLieu", formData.idChatLieu);
+                    formDataObj.append("soLuong", formData.soLuong);
+                    formDataObj.append("hinhAnh", imageAdd);
+                    formDataObj.append("giaBan",formData.giaBan);
                 }
 
                 try {
@@ -317,6 +344,7 @@ function ProductDetails() {
                                 idThuongHieu: 1,
                                 idChatLieu: 1,
                                 trangThai: 1,
+
                             });
                             setImageAdd(null);
                         }
@@ -330,6 +358,9 @@ function ProductDetails() {
         }
     };
 
+
+// console.log(formData);
+// console.log(imageAdd);
 
 
     const updateProductDetail = (e, id) => {
@@ -399,7 +430,7 @@ function ProductDetails() {
                     const response = await fetch(`http://localhost:5050/api/v1/chi-tiet-san-pham/update-chi-tiet-san-pham/${id}`, {
                         method: "PUT",
                         body: formDataObj,
-                        
+
                     });
 
                     if (response.ok) {
@@ -728,8 +759,6 @@ function ProductDetails() {
                                         value={formData.soLuong}
                                         onChange={(e) => {
                                             handleInputChange(e);
-                                            console.log(e.target.value);
-
                                         }}
                                     // required
                                     ></input>
@@ -834,7 +863,9 @@ function ProductDetails() {
                             <tr key={index}>
                                 <th scope="row">{ProductDetail.id}</th>
                                 <td>{ProductDetail.tenSanPham}</td>
-                                <td><img src={
+                                <td><img 
+                                style={{width:"60px",height:"60px"}}
+                                 src={
                                     ProductDetail.pathHinhAnh} alt='anh giay sneaker'></img></td>
                                 <td>{ProductDetail.kichCo}</td>
                                 <td>{ProductDetail.kieuDang}</td>
