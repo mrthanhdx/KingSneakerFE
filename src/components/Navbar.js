@@ -30,7 +30,7 @@ function Navbar() {
                                     aria-current="page"
                                     href="#"
                                     onClick={() => {
-                                        setCurrentUI("SellInCounter");
+                                        setCurrentUI("SellAtCounter");
                                     }}
                                 >Bán Hàng Tại Quầy</a>
                             </li>

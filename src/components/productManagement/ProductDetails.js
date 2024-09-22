@@ -56,9 +56,7 @@ function ProductDetails() {
     });
 
 
-    // console.log(listProductDetail);
 
-    // console.log(formDataUpdate);
 
     const [errorValidateMessage, setErrorValidateMessage] = useState({
         isImageAddValid: false,
@@ -79,7 +77,7 @@ function ProductDetails() {
     })
     // console.log(formDataUpdate);
 
-    console.log(listProductDetail);
+    // console.log(listProductDetail);
     
 
     useEffect(() => {
@@ -236,10 +234,10 @@ function ProductDetails() {
         // Local validation flags
         let isValidGiaBan = true;
         let isValidSoLuong = true;
-        let isImageAddValid = true;
+        let isImageAddValid = errorValidateMessage.isImageAddValid;
         let giaBanValid = "";
         let soLuongValid = "";
-        let imageValid = '';
+        let imageValid = errorValidateMessage.imageValid;
 
         // Convert form inputs to numbers before validating
         const giaBan = Number(formData.giaBan);
@@ -247,10 +245,39 @@ function ProductDetails() {
 
 
         //validate image
-        if (imageAdd == null) {
+        let file = imageAddRef.current.files[0];
+        if (imageAdd == null ||imageAdd ==undefined) {
             isImageAddValid = false;
             imageValid = "Image can not be null";
+        } else if (file !== null && file !== undefined) {
+            let fileName = file.name;
+            let fileType = fileName.substr(fileName.lastIndexOf('.') + 1);
+            let messageError = "";
+            if (fileType.toLowerCase() !== "jpg" && fileType.toLowerCase() !== "png") {
+                messageError = "file type is not valid !";
+                setErrorValidateMessage({
+                    ...errorValidateMessage,
+                    isImageAddValid: false,
+                    imageValid: messageError
+                });
+                setErrorValidateMessage({
+                    ...errorValidateMessage,
+                    isImageAddValid: false,
+                    imageValid: messageError
+                });
+
+            }
+            else {
+            isImageAddValid = true;
+            imageValid = "OK";
         }
+            // setErrorValidateMessage({
+            //     ...errorValidateMessage,
+            //     isImageAddValid: false,
+            //     imageValid: messageError
+            // });
+        }
+
 
         // Validate giaBan
         if (giaBan <= 0 || isNaN(giaBan)) {
@@ -369,7 +396,7 @@ function ProductDetails() {
         // Local validation flags
         let isValidGiaBan = true;
         let isValidSoLuong = true;
-        let isImageAddValid = errorValidateUpdateMessage.isImageUpdateValid;
+        let isImageUpdateValid = errorValidateUpdateMessage.isImageUpdateValid;
         let giaBanValid = "";
         let soLuongValid = "";
         let imageValid = errorValidateUpdateMessage.imageValid;
@@ -380,17 +407,32 @@ function ProductDetails() {
 
 
         //validate image
-        if (imageUpdate == null) {
-            console.log(imageUpdate);
-
-            isImageAddValid = false;
+        console.log(imageUpdate);
+        
+        if (imageUpdate == null ||imageUpdate ==undefined) {
+            isImageUpdateValid = false;
             imageValid = "Image can not be null";
-        } else {
+        } else if (imageUpdate !== null && imageUpdate !== undefined) {
+            let fileName = imageUpdate.name;
+            let fileType = fileName.substr(fileName.lastIndexOf('.') + 1);
+            let messageError = "";
+            if (fileType.toLowerCase() !== "jpg" && fileType.toLowerCase() !== "png") {
+                messageError = "file type is not valid !";
+                isImageUpdateValid = false;
+                setErrorValidateMessage({
+                    ...errorValidateMessage,
+                    isImageUpdateValid: false,
+                    imageValid: messageError
+                });
+
+            }
+            else {
+            isImageUpdateValid = true;
             imageValid = "OK";
-            isImageAddValid = true;
-
-
         }
+        }
+
+
 
         // Validate giaBan
         if (giaBan <= 0 || isNaN(giaBan)) {
@@ -410,20 +452,33 @@ function ProductDetails() {
             soLuongValid,
             isValidGiaBan,
             isValidSoLuong,
-            isImageAddValid,
+            isImageUpdateValid,
             imageValid
         });
 
+        
+        console.log(isValidGiaBan,isValidSoLuong,isImageUpdateValid);
+        
 
         // If both are valid, proceed with form submission
-        if (isValidGiaBan && isValidSoLuong && isImageAddValid) {
+        if (isValidGiaBan && isValidSoLuong && isImageUpdateValid) {
             const updateData = async () => {
                 const formDataObj = new FormData();
 
                 // Append form data and image
-                formDataObj.append("details", JSON.stringify(formDataUpdate));
                 if (imageUpdate) {
-                    formDataObj.append("image", imageUpdate);
+
+                    formDataObj.append("idSanPham", formDataUpdate.idSanPham);
+                    formDataObj.append("idKichCo", formDataUpdate.idKichCo);
+                    formDataObj.append("idKieuDang", formDataUpdate.idKieuDang);
+                    formDataObj.append("idMauSac", formDataUpdate.idMauSac);
+                    formDataObj.append("idNsx", formDataUpdate.idNsx);
+                    formDataObj.append("idThuongHieu", formDataUpdate.idThuongHieu);
+                    formDataObj.append("trangThai", formDataUpdate.trangThai);
+                    formDataObj.append("idChatLieu", formDataUpdate.idChatLieu);
+                    formDataObj.append("soLuong", formDataUpdate.soLuong);
+                    formDataObj.append("giaBan",formDataUpdate.giaBan);
+                    formDataObj.append("hinhAnh", imageUpdate);
                 }
 
                 try {
@@ -461,7 +516,7 @@ function ProductDetails() {
                                 idChatLieu: 1,
                                 trangThai: 1,
                             });
-                            setImageUpdate(null);
+                            // setImageUpdate(null);
                         }
                     }
                 } catch (error) {
@@ -485,6 +540,11 @@ function ProductDetails() {
             let messageError = "";
             if (fileType.toLowerCase() !== "jpg" && fileType.toLowerCase() !== "png") {
                 messageError = "file type is not valid !";
+                setErrorValidateMessage({
+                    ...errorValidateMessage,
+                    isImageAddValid: false,
+                    imageValid: messageError
+                });
             }
             setErrorValidateMessage({
                 ...errorValidateMessage,
@@ -509,13 +569,17 @@ function ProductDetails() {
             let fileName = file.name;
             let fileType = fileName.substr(fileName.lastIndexOf('.') + 1);
             let messageError = "";
+            let isFileValid = false;
             if (fileType.toLowerCase() !== "jpg" && fileType.toLowerCase() !== "png") {
                 messageError = "file type is not valid !";
+                isFileValid = false;
             } else {
+                messageError = "";
+                isFileValid = true;
             }
             setErrorValidateUpdateMessage({
                 ...errorValidateUpdateMessage,
-                isImageUpdateValid: false,
+                isImageUpdateValid: isFileValid,
                 imageValid: messageError
             });
         }
@@ -1106,8 +1170,6 @@ function ProductDetails() {
                                                                     name='inputImageUpdate'
                                                                     ref={imageUpdateRef}
                                                                     onChange={(e) => {
-                                                                        console.log(e.target.files);
-
                                                                         handleImageUpdateChange(e);
                                                                     }}
                                                                 ></input>
