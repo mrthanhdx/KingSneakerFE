@@ -8,6 +8,18 @@ function ListInvoiceSellCounter() {
     const [listInvoice, setListInvoice] = useState([]);
 
     console.log(listInvoice);
+    const refershListHD = ()=>{
+        const fetchDataListInvoice = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/hoa-don/show-all");
+                const data = await response.json();
+                setListInvoice(data)
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        fetchDataListInvoice();
+    }
 
     useEffect(() => {
         console.log(123);
@@ -27,19 +39,37 @@ function ListInvoiceSellCounter() {
     function openInvoiceDetail(idInvoice) {
         setSellCounterScreen("detailInvoice");
         setInvoiceDetail(idInvoice);
-
     }
 
+    const createNewHoaDon = ()=>{
+        let newHD = async()=>{
+            try{
+                const response = await fetch("http://localhost:5050/api/v1/hoa-don/new-hoa-don",{
+                    method:"POST"
+                });
+                const data = await response.text();
+                console.log(data);
+                
+            } catch(err) {
+                console.error(err);
+            }
+        }
+        newHD();
+        refershListHD();
+    }
 
     return (
         <>
-        <h2 className="text-success">List Invoice</h2>
+        <h2 className="text-success">Sell in counter</h2>
         <br></br>
+        <br></br>
+        
         <button
-
-        style={{marginRight:"1300px",width:"140px",height:"60px"}}
+        style={{marginRight:"1600px",width:"140px",height:"60px"}}
          className="btn btn-success"
-         
+         onClick={()=>{
+            createNewHoaDon();
+         }}
          >New Invoice</button>
          <br></br>
          <br></br>

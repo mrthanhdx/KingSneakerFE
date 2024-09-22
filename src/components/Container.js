@@ -13,7 +13,6 @@ import { ContextProvider } from './Context';
 
 function Container() {
     const { currentUI, setCurrentUI } = useContext(GContext);
-    // console.log(currentUI);
 
     return (
 
