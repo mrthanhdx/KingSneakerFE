@@ -73,6 +73,14 @@ function Navbar() {
                                             }}>Màu Sắc</a>
                                     </li>
                                     <li>
+                                        <a
+                                            className="dropdown-item"
+                                            href="#"
+                                            onClick={() => {
+                                                setCurrentUI("MerterialManagement");
+                                            }}>Chất Liệu</a>
+                                    </li>
+                                    <li>
                                         <a className="dropdown-item"
                                             href="#"
                                             onClick={() => {
