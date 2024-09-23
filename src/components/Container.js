@@ -8,6 +8,7 @@ import ManuefacturerManage from "./propertiesManagement/ManuefacturerManage"
 import BrandManage from "./propertiesManagement/BrandManage"
 import SizeManage from "./propertiesManagement/SizeManage"
 import StyleManage from "./propertiesManagement/StyleManage"
+import Merterial from './propertiesManagement/Merterial';
 import CounterSell from './counterSell/CounterSell';
 import { ContextProvider } from './Context';
 
@@ -24,6 +25,7 @@ function Container() {
             {currentUI == "BrandManagement" && <BrandManage />}
             {currentUI == "SizeManagement" && <SizeManage />}
             {currentUI == "StyleManagement" && <StyleManage />}
+            {currentUI == "MerterialManagement" && <Merterial/>}
             {currentUI == "SellAtCounter" &&
                 <ContextProvider>
                     <CounterSell/>

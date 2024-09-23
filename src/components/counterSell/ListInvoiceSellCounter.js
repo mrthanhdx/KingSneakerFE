@@ -77,10 +77,10 @@ function ListInvoiceSellCounter() {
                 <thead>
                     <tr>
                         <th scope="col">Mã HD</th>
-                        <th scope="col">Tổng Tiền </th>
-                        <th scope="col">Khách Hàng</th>
                         <th scope="col">Nhân Viên Tạo</th>
                         <th scope="col">Ngày Tạo</th>
+                        <th scope="col">Khách Hàng</th>
+                        <th scope="col">Tổng Tiền </th>
                         <th scope="col">Trạng Thái</th>
                         <th scope="col">Ghi Chú</th>
                         <th scope="col">Handle</th>
@@ -93,11 +93,11 @@ function ListInvoiceSellCounter() {
                         return (
                             <tr key={invoice.id}>
                                 <th scope="row">{invoice.ma}</th>
-                                <th>{invoice.tongTien}</th>
-                                <th>{invoice.khachHang==null?"Trống":"invoice.khachHang.hoTen"}</th>
                                 <th>{invoice.nhanVien.hoTen}</th>
                                 <th>{invoice.ngayTao[2] + "/" + invoice.ngayTao[1] + "/" + invoice.ngayTao[0]}</th>
-                                <th>{invoice.trangThai}</th>
+                                <th>{invoice.khachHang==null?"Trống":"invoice.khachHang.hoTen"}</th>
+                                <th>{invoice.tongTien}</th>
+                                <th>{invoice.trangThai==0?"Chưa Thanh Toán":"Đã Thanh Toán"}</th>
                                 <th>{invoice.ghiChu}</th>
 
                                 <td>
