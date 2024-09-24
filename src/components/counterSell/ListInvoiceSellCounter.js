@@ -49,13 +49,14 @@ function ListInvoiceSellCounter() {
                 });
                 const data = await response.text();
                 console.log(data);
+                refershListHD();
                 
             } catch(err) {
                 console.error(err);
             }
         }
         newHD();
-        refershListHD();
+       
     }
 
     return (

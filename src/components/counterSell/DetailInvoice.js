@@ -11,14 +11,18 @@ import { Modal } from 'bootstrap'
 function DetailInvoice({ idInvoice }) {
     library.add(fas);
     const [listProductDetail, setlistProductDetail] = useState([]);
-    const [quantityAdd, setQuantityAdd] = useState(1);
+    const [quantityAdd, setQuantityAdd] = useState({});
     const { sellCounterScreen, setSellCounterScreen } = useContext(GContext);
     const [detailCurrentInvoice, setDetailCurrentInvoice] = useState({});
-    const [listHDCT,setListHDCT] = useState([]);
+    const [listHDCT, setListHDCT] = useState([]);
+    const [giaGiam, setGiaGiam] = useState(0);
+    const [quantityUpdate, setQuantityUpdate] = useState({});
+    const [selectedHdctId, setSelectedHdctId] = useState(null); // To track which hdct is being updated
+
     // console.log(detailCurrentInvoice);
 
-    console.log(listHDCT);
-    
+    // console.log(listHDCT);
+
 
     useEffect(() => {
         const fetchDataDetailInvoice = async () => {
@@ -49,6 +53,20 @@ function DetailInvoice({ idInvoice }) {
     }, [])
 
     const refreshApp = () => {
+        const fetchDataDetailInvoice = async () => {
+            const response = await fetch(`http://localhost:5050/api/v1/hoa-don/detail/${idInvoice}`);
+            const data = await response.json();
+            setDetailCurrentInvoice(data);
+        }
+        fetchDataDetailInvoice();
+
+        const fetchListProductDetail = async () => {
+            const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`);
+            const data = await response.json();
+            setListHDCT(data);
+        }
+        fetchListProductDetail();
+
         const fetchDataCtsp = async () => {
             try {
                 const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
@@ -60,11 +78,102 @@ function DetailInvoice({ idInvoice }) {
             }
         }
         fetchDataCtsp();
-    }
-    const onQuatityAddChange = (e) => {
 
-        setQuantityAdd(e.target.value);
     }
+    const onQuatityAddChange = (e, productID) => {
+
+        setQuantityAdd(prevQuantity => (
+            {
+                ...prevQuantity,
+                [productID]: e.target.value
+            }
+        ));
+    }
+
+
+    const deleteProductFromInvoice = (idCTSP, idHD) => {
+        const HDCTDeleteObj = new FormData();
+        HDCTDeleteObj.append("idCtsp", idCTSP);
+        HDCTDeleteObj.append("idHd", idHD);
+        try {
+            const deleteHdct = async () => {
+                const response = await fetch("http://localhost:5050/api/v1/hoa-don-chi-tiet/delete-hdct", {
+                    method: "DELETE",
+                    body: HDCTDeleteObj
+                })
+                const data = await response.text();
+                console.log(data);
+                refreshApp();
+                window.alert("delete thanh cong")
+
+            }
+            deleteHdct();
+        } catch (err) {
+            console.error(err);
+        }
+
+    }
+
+
+    const onProductQuantityUpdateChange = (e, idHdct) => {
+        setQuantityUpdate(prevQuantityUpdate => ({
+            ...prevQuantityUpdate,
+            [idHdct]: e.target.value
+        }))
+    }
+
+    const updateProductQuantity = (idHDCT, soLuongUpdate) => {
+        const dataUpdateObj = new FormData();
+        dataUpdateObj.append("idHDCT", idHDCT);
+        dataUpdateObj.append("soLuongUpdate", soLuongUpdate);
+
+        try {
+            const updateQuantity = async () => {
+                const response = await fetch("http://localhost:5050/api/v1/hoa-don-chi-tiet/update-quantity", {
+                    method: "PUT", // "UPDATE" is not a valid HTTP method; you likely meant "POST" or "PUT"
+                    body: dataUpdateObj
+                });
+
+                // if (!response.ok) {
+                //     throw new Error(`HTTP error! status: ${response.status}`);
+                // }
+
+                // Dynamically determine the response type
+                const contentType = response.headers.get("content-type");
+                let data;
+
+                if (contentType.includes("application/json")) {
+                    data = await response.json(); // Parse as JSON
+                } else if (contentType.includes("text/plain")) {
+                    data = await response.text(); // Parse as text
+                } else {
+                    data = await response.blob(); // For other types like binary data
+                }
+
+                // Do something with the returned data (whether it's text or JSON)
+                console.log(data);
+
+
+                const modalElement = document.getElementById('modalUpdateQuantity');
+                if (modalElement) {
+                    const modalInstance = Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                        setQuantityUpdate({ selectedHdctId: 1 });
+                        setTimeout(() => {
+                            refreshApp();
+                        }, 200); // Give some time for modal closure
+                    }
+
+                }
+
+            };
+
+            updateQuantity();
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const addNewHdct = (idCTSP, idHD, soLuong) => {
         const addHDCT = async () => {
@@ -87,18 +196,49 @@ function DetailInvoice({ idInvoice }) {
                     const modalInstance = Modal.getInstance(modalElement);
                     if (modalInstance) {
                         modalInstance.hide();
-                        // Reset form after submission
                         setQuantityAdd(1);
-                        refreshApp();
+                        setTimeout(() => {
+                            refreshApp();
+                        }, 200); // Give some time for modal closure
                     }
-                }
 
+                }
             } catch (error) {
                 console.error(error);
             }
 
         }
         addHDCT();
+    }
+    const deleteAllHDCT = (idHD) => {
+        const deleteAllHDCT1 = async()=>{
+            try {
+                const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/delete-all-hdct/${idHD}`, {
+                    method: "DELETE"
+                });
+    
+    
+                const contentType = response.headers.get("content-type");
+                let data;
+    
+                if (contentType.includes("application/json")) {
+                    data = await response.json(); // Parse as JSON
+                } else if (contentType.includes("text/plain")) {
+                    data = await response.text(); // Parse as text
+                } else {
+                    data = await response.blob(); // For other types like binary data
+                }
+    
+                // Do something with the returned data (whether it's text or JSON)
+                console.log(data);
+                refreshApp();
+            } catch (err) {
+                console.error(err);
+    
+            }
+        }
+        deleteAllHDCT1();
+        
     }
     return (
         <>
@@ -138,7 +278,16 @@ function DetailInvoice({ idInvoice }) {
                         <button className="col-2 btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#modalAdd">Thêm Sản Phẩm</button>
-                        <button style={{ marginLeft: "20px" }} className="col-3 btn btn-danger">Xóa Hết Sản Phẩm</button>
+                        <button
+                            style={{ marginLeft: "20px" }}
+                            onClick={() => {
+                                let isConfirm = window.confirm("are you sure to delete all the product from this invoice ?");
+                                if (isConfirm) {
+                                    deleteAllHDCT(idInvoice);
+                                }
+                            }}
+                            className="col-3 btn btn-danger"
+                        >Xóa Hết Sản Phẩm</button>
                     </div>
 
                     {/* //modal */}
@@ -192,10 +341,10 @@ function DetailInvoice({ idInvoice }) {
                                                             className={ProductDetail.trangThai == 1 ? "text-success" : "text-danger"}
                                                             style={{ fontSize: "18px", fontWeight: "bold" }}
                                                         ><input
-                                                                value={quantityAdd}
+                                                                value={quantityAdd[ProductDetail.id] || 1}
                                                                 type="number"
                                                                 onChange={(e) => {
-                                                                    onQuatityAddChange(e);
+                                                                    onQuatityAddChange(e, ProductDetail.id);
                                                                 }}
                                                                 required /></td>
 
@@ -203,7 +352,10 @@ function DetailInvoice({ idInvoice }) {
                                                             <a
                                                                 className='btn btn-primary'
                                                                 onClick={() => {
-                                                                    addNewHdct(ProductDetail.id, idInvoice, quantityAdd);
+                                                                    let isConfirm = window.confirm("are you sure to add this product to invoice ?");
+                                                                    if (isConfirm) {
+                                                                        addNewHdct(ProductDetail.id, idInvoice, quantityAdd[ProductDetail.id] == undefined ? 1 : quantityAdd[ProductDetail.id]);
+                                                                    }
                                                                 }}
                                                             >
                                                                 Add</a>
@@ -227,61 +379,107 @@ function DetailInvoice({ idInvoice }) {
 
 
                     <hr />
-                    <div style={{ width: "95%", height: "180px", marginLeft: "30px", marginTop: "60px" }} className="product-cart bg-light row"
-                    >
-                        <div className="col-2">
-                            <img src="" alt="anh san pham" />
-                        </div>
-                        <div className="col-2">
-                            <h5>Ten SP</h5>
-                        </div>
-                        <div className="col-2">
-                            <span>Thuoc Tinh 1</span>
-                            <br />
-                            <span>Thuoc Tinh 2</span>
-                            <br />
-                            <span>Thuoc Tinh 3</span>
-                            <br />
-                            <span>Thuoc Tinh 4</span>
-                            <br />
-                            <span>Thuoc Tinh 5</span>
-                            <br />
-                            <span>Thuoc Tinh 6</span>
+                    {listHDCT.map((hdct) => {
+                        return (
+                            <div key={hdct.id} style={{ width: "97%", height: "200px", marginLeft: "20px", marginTop: "60px" }} className="product-cart bg-light row"
+                            >
+                                <div className="col-2">
+                                    <img style={{ width: "80px", height: "80px" }} src={hdct.chiTietSanPham.hinhAnh.path} alt="anh san pham" />
+                                </div>
+                                <div className="col-2">
+                                    <h5>{hdct.chiTietSanPham.sanPham.ten}</h5>
+                                </div>
+                                <div className="col-2">
+                                    <span>Màu:{hdct.chiTietSanPham.mauSac.ten}</span>
+                                    <br />
+                                    <span>Size:{hdct.chiTietSanPham.kichCo.ten}</span>
+                                    <br />
+                                    <span>Style:{hdct.chiTietSanPham.kieuDang.ten}</span>
+                                    <br />
+                                    <span>NSX:{hdct.chiTietSanPham.nsx.ten}</span>
+                                    <br />
+                                    <span>{hdct.chiTietSanPham.chatLieu.ten}</span>
+                                    <br />
+                                    <span>TH:{hdct.chiTietSanPham.thuongHieu.ten}</span>
 
-                        </div>
+                                </div>
 
-                        <div className="col-2">
-                            <h6>Đơn Giá</h6>
-                            <br /><br /><br />
-                            <h6>Số Lượng</h6>
-                        </div>
+                                <div className="col-2">
+                                    <h6>Đơn Giá</h6>
+                                    <span>{hdct.donGia}Vnd</span>
+                                    <br /><br /><br />
+                                    <h6>Số Lượng</h6>
+                                    <span>{hdct.soLuong}</span>
 
-                        <div className="col-2">
-                            <h6>Tổng Tiền</h6>
-                        </div>
+                                </div>
 
-                        <div className="col-2">
-                            <br />
-                            <button className="btn btn-warning">update số lượng</button>
-                            <br />
-                            <br />
-                            <button className="btn btn-danger">Xóa khỏi đơn hàng</button>
-                        </div>
-                    </div>
-                    <div style={{ width: "95%", height: "180px", marginLeft: "30px", marginTop: "60px" }} className="product-cart bg-light"
-                    >
+                                <div className="col-2">
+                                    <h6>Tổng Tiền</h6>
+                                    <span>{hdct.donGia * hdct.soLuong}vnd</span>
+                                </div>
 
-                    </div>
+                                <div className="col-2">
+                                    <br />
+                                    <button
+                                        className="btn btn-warning"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalUpdateQuantity"
+                                        onClick={() => setSelectedHdctId(hdct.id)} // Set the selected hdct ID
+                                    >
+                                        Update số lượng
+                                    </button>
 
-                    <div style={{ width: "95%", height: "180px", marginLeft: "30px", marginTop: "60px" }} className="product-cart bg-light"
-                    >
+                                    <br />
 
-                    </div>
+                                    {/* Modal update product quantity */}
+                                    <div className="modal fade" id="modalUpdateQuantity" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ width: "100%" }}>
+                                        <div className="modal-dialog" style={{ width: "100%" }}>
+                                            <div className="modal-content" style={{ width: "400px" }}>
+                                                <div className="modal-header">
+                                                    <h1 className="modal-title fs-5" id="exampleModalLabel">Update Product Quantity</h1>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <input
+                                                        type="number"
+                                                        value={quantityUpdate[selectedHdctId] || listHDCT.find(h => h.id === selectedHdctId)?.soLuong || 1}
+                                                        onChange={(e) => onProductQuantityUpdateChange(e, selectedHdctId)}
+                                                    />
+                                                    <br />
+                                                    <br />
+                                                    <button
+                                                        className="btn btn-outline-warning"
+                                                        onClick={() => {
+                                                            // Handle update logic for the selected item
+                                                            updateProductQuantity(selectedHdctId, quantityUpdate[selectedHdctId]);
+                                                            console.log("Updated quantity for ID:", selectedHdctId, "with value:", quantityUpdate[selectedHdctId] || listHDCT.find(h => h.id === selectedHdctId)?.soLuong || 1);
+                                                        }}
+                                                    >Update</button>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    <div style={{ width: "95%", height: "180px", marginLeft: "30px", marginTop: "60px" }} className="product-cart bg-light"
-                    >
 
-                    </div>
+
+
+                                    <br />
+                                    <button className="btn btn-danger"
+                                        onClick={() => {
+                                            let isConfirm = window.confirm("are you sure to delete this product from invoice !");
+                                            if (isConfirm) {
+                                                deleteProductFromInvoice(hdct.chiTietSanPham.id, idInvoice);
+                                            }
+                                        }}
+                                    >Xóa khỏi đơn hàng</button>
+                                </div>
+                            </div>
+                        )
+                    })}
+
                 </div>
 
                 <div className="invoiceInfomation col-5"
@@ -312,24 +510,23 @@ function DetailInvoice({ idInvoice }) {
                         <button className="col-4 btn btn-primary">Chọn Khách Hàng</button>
                     </div>
                     <hr />
+
                     <div className="row">
-                        <label className="col-7" style={{ fontSize: "18px", fontWeight: "bold" }}>Số Lượng Sản Phẩm : </label>
-                    </div>
-                    <br />
-                    <div className="row">
-                        <label className="col-6" style={{ fontSize: "18px", fontWeight: "bold" }}>Tổng Tiền : </label>
+                        <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Tổng Tiền : </label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{detailCurrentInvoice.tongTien}</label>
+
                     </div>
                     <br />
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Giảm giá voucher(nếu có) : </label>
-                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>... </label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{giaGiam}</label>
                         <button className="col-3 btn btn-primary">Chọn Voucher</button>
                     </div>
                     <hr />
 
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Số Tiền Thanh toán : </label>
-                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>... </label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{detailCurrentInvoice.tongTien - giaGiam} </label>
                     </div>
                     <br />
                     <div className="row">
