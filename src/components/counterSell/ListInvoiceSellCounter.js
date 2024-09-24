@@ -7,7 +7,7 @@ function ListInvoiceSellCounter() {
     const { sellCounterScreen, setSellCounterScreen, invoiceDetail, setInvoiceDetail, setCurrentUI, currentUI } = useContext(GContext);
     const [listInvoice, setListInvoice] = useState([]);
 
-    console.log(listInvoice);
+    // console.log(listInvoice);
     const refershListHD = ()=>{
         const fetchDataListInvoice = async () => {
             try {
@@ -22,7 +22,7 @@ function ListInvoiceSellCounter() {
     }
 
     useEffect(() => {
-        console.log(123);
+        // console.log(123);
 
         const fetchDataListInvoice = async () => {
             try {
@@ -88,7 +88,7 @@ function ListInvoiceSellCounter() {
                 </thead>
                 <tbody>
                     {listInvoice.map((invoice) => {
-                        console.log(invoice.ngayTao[0]);
+                        // console.log(invoice.ngayTao[0]);
 
                         return (
                             <tr key={invoice.id}>

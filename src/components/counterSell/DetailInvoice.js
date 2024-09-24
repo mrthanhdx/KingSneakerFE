@@ -3,6 +3,8 @@ import { GContext } from "../Context";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { library } from "@fortawesome/fontawesome-svg-core";
+import { Modal } from 'bootstrap'
+
 
 
 
@@ -12,8 +14,11 @@ function DetailInvoice({ idInvoice }) {
     const [quantityAdd, setQuantityAdd] = useState(1);
     const { sellCounterScreen, setSellCounterScreen } = useContext(GContext);
     const [detailCurrentInvoice, setDetailCurrentInvoice] = useState({});
-    console.log(detailCurrentInvoice);
+    const [listHDCT,setListHDCT] = useState([]);
+    // console.log(detailCurrentInvoice);
 
+    console.log(listHDCT);
+    
 
     useEffect(() => {
         const fetchDataDetailInvoice = async () => {
@@ -22,6 +27,13 @@ function DetailInvoice({ idInvoice }) {
             setDetailCurrentInvoice(data);
         }
         fetchDataDetailInvoice();
+
+        const fetchListProductDetail = async () => {
+            const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`);
+            const data = await response.json();
+            setListHDCT(data);
+        }
+        fetchListProductDetail();
 
         const fetchDataCtsp = async () => {
             try {
@@ -35,11 +47,58 @@ function DetailInvoice({ idInvoice }) {
         }
         fetchDataCtsp();
     }, [])
-    console.log(quantityAdd);
 
+    const refreshApp = () => {
+        const fetchDataCtsp = async () => {
+            try {
+                const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
+                const data = await response.json();
+                setlistProductDetail(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataCtsp();
+    }
     const onQuatityAddChange = (e) => {
-        
+
         setQuantityAdd(e.target.value);
+    }
+
+    const addNewHdct = (idCTSP, idHD, soLuong) => {
+        const addHDCT = async () => {
+            try {
+                const hdctFormData = new FormData();
+                hdctFormData.append("idCTSP", idCTSP);
+                hdctFormData.append("idHD", idHD);
+                hdctFormData.append("soLuong", soLuong);
+                const response = await fetch("http://localhost:5050/api/v1/hoa-don-chi-tiet/new-hdct", {
+                    method: "POST",
+                    body: hdctFormData
+                });
+                const data = await response.text();
+                console.log(data);
+
+                //close modal
+
+                const modalElement = document.getElementById('modalAdd');
+                if (modalElement) {
+                    const modalInstance = Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                        // Reset form after submission
+                        setQuantityAdd(1);
+                        refreshApp();
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+
+        }
+        addHDCT();
     }
     return (
         <>
@@ -82,7 +141,7 @@ function DetailInvoice({ idInvoice }) {
                         <button style={{ marginLeft: "20px" }} className="col-3 btn btn-danger">Xóa Hết Sản Phẩm</button>
                     </div>
 
-
+                    {/* //modal */}
                     <div className="modal fade" id="modalAdd" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ width: "100%" }}>
                         <div className="modal-dialog" style={{ width: "100%", margin: "30px 300px" }}>
                             <div className="modal-content" style={{ width: "1400px" }}>
@@ -135,7 +194,7 @@ function DetailInvoice({ idInvoice }) {
                                                         ><input
                                                                 value={quantityAdd}
                                                                 type="number"
-                                                                onChange={(e)=>{
+                                                                onChange={(e) => {
                                                                     onQuatityAddChange(e);
                                                                 }}
                                                                 required /></td>
@@ -143,6 +202,9 @@ function DetailInvoice({ idInvoice }) {
                                                         <td>
                                                             <a
                                                                 className='btn btn-primary'
+                                                                onClick={() => {
+                                                                    addNewHdct(ProductDetail.id, idInvoice, quantityAdd);
+                                                                }}
                                                             >
                                                                 Add</a>
                                                         </td>
@@ -165,9 +227,46 @@ function DetailInvoice({ idInvoice }) {
 
 
                     <hr />
-                    <div style={{ width: "95%", height: "180px", marginLeft: "30px", marginTop: "60px" }} className="product-cart bg-light"
+                    <div style={{ width: "95%", height: "180px", marginLeft: "30px", marginTop: "60px" }} className="product-cart bg-light row"
                     >
+                        <div className="col-2">
+                            <img src="" alt="anh san pham" />
+                        </div>
+                        <div className="col-2">
+                            <h5>Ten SP</h5>
+                        </div>
+                        <div className="col-2">
+                            <span>Thuoc Tinh 1</span>
+                            <br />
+                            <span>Thuoc Tinh 2</span>
+                            <br />
+                            <span>Thuoc Tinh 3</span>
+                            <br />
+                            <span>Thuoc Tinh 4</span>
+                            <br />
+                            <span>Thuoc Tinh 5</span>
+                            <br />
+                            <span>Thuoc Tinh 6</span>
 
+                        </div>
+
+                        <div className="col-2">
+                            <h6>Đơn Giá</h6>
+                            <br /><br /><br />
+                            <h6>Số Lượng</h6>
+                        </div>
+
+                        <div className="col-2">
+                            <h6>Tổng Tiền</h6>
+                        </div>
+
+                        <div className="col-2">
+                            <br />
+                            <button className="btn btn-warning">update số lượng</button>
+                            <br />
+                            <br />
+                            <button className="btn btn-danger">Xóa khỏi đơn hàng</button>
+                        </div>
                     </div>
                     <div style={{ width: "95%", height: "180px", marginLeft: "30px", marginTop: "60px" }} className="product-cart bg-light"
                     >
