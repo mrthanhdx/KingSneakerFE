@@ -11,21 +11,24 @@ import StyleManage from "./propertiesManagement/StyleManage"
 import Merterial from './propertiesManagement/Merterial';
 import CounterSell from './counterSell/CounterSell';
 import { ContextProvider } from './Context';
-
+import ToastMessage from './toastMessage/ToastMessage';
 function Container() {
     const { currentUI, setCurrentUI } = useContext(GContext);
+console.log(currentUI);
 
     return (
 
         <>
-            {currentUI == "ProductDetails" && <ProductDetails />}
-            {currentUI == "ProductManage" && <ProductManage />}
-            {currentUI == "ColorManagement" && <ColorManage />}
-            {currentUI == "ManuefacturerManagement" && <ManuefacturerManage />}
-            {currentUI == "BrandManagement" && <BrandManage />}
-            {currentUI == "SizeManagement" && <SizeManage />}
-            {currentUI == "StyleManagement" && <StyleManage />}
-            {currentUI == "MerterialManagement" && <Merterial/>}
+            {currentUI === "ProductDetails" && <ProductDetails />}
+            {currentUI === "ProductManage" && <ProductManage />}
+            {currentUI === "ColorManagement" && <ColorManage />}
+            {currentUI === "ManuefacturerManagement" && <ManuefacturerManage />}
+            {currentUI === "BrandManagement" && <BrandManage />}
+            {currentUI === "SizeManagement" && <SizeManage />}
+            {currentUI === "StyleManagement" && <StyleManage />}
+            {currentUI === "MerterialManagement" && <Merterial/>}
+            {currentUI === "toast" && <ToastMessage/>}
+
             {currentUI == "SellAtCounter" &&
                 <ContextProvider>
                     <CounterSell/>

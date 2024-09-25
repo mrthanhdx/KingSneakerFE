@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { Modal } from 'bootstrap'
-
+import {toastError,toastInfo,toastSuccess,toastWarning} from "../toastMessage/ToastMessage";
 
 
 
@@ -102,9 +102,13 @@ function DetailInvoice({ idInvoice }) {
                     body: HDCTDeleteObj
                 })
                 const data = await response.text();
-                console.log(data);
+               
+                if(response.status==200) {
+                    toastSuccess("thành công",data);
+                } else {
+                    toastError("thất bại",data);
+                }
                 refreshApp();
-                window.alert("delete thanh cong")
 
             }
             deleteHdct();
@@ -125,6 +129,7 @@ function DetailInvoice({ idInvoice }) {
     const updateProductQuantity = (idHDCT, soLuongUpdate) => {
         const dataUpdateObj = new FormData();
         dataUpdateObj.append("idHDCT", idHDCT);
+        console.log(soLuongUpdate);
         dataUpdateObj.append("soLuongUpdate", soLuongUpdate);
 
         try {
@@ -133,10 +138,6 @@ function DetailInvoice({ idInvoice }) {
                     method: "PUT", // "UPDATE" is not a valid HTTP method; you likely meant "POST" or "PUT"
                     body: dataUpdateObj
                 });
-
-                // if (!response.ok) {
-                //     throw new Error(`HTTP error! status: ${response.status}`);
-                // }
 
                 // Dynamically determine the response type
                 const contentType = response.headers.get("content-type");
@@ -151,8 +152,14 @@ function DetailInvoice({ idInvoice }) {
                 }
 
                 // Do something with the returned data (whether it's text or JSON)
-                console.log(data);
+              if(response.status==400) {
+                  toastError("Thất bại",data);
+              } else {
+                toastSuccess("Thành Công",data);
 
+              }
+            console.log(data);
+            
 
                 const modalElement = document.getElementById('modalUpdateQuantity');
                 if (modalElement) {
@@ -171,7 +178,7 @@ function DetailInvoice({ idInvoice }) {
 
             updateQuantity();
         } catch (error) {
-            console.error(error);
+            toastError("Thất bại",error);
         }
     };
 
@@ -187,7 +194,11 @@ function DetailInvoice({ idInvoice }) {
                     body: hdctFormData
                 });
                 const data = await response.text();
-                console.log(data);
+                if(response.status==200) {
+                    toastSuccess("Thêm thành công",data);
+                } else {
+                    toastError("Thêm thất bại",data);
+                }
 
                 //close modal
 
@@ -230,7 +241,11 @@ function DetailInvoice({ idInvoice }) {
                 }
     
                 // Do something with the returned data (whether it's text or JSON)
-                console.log(data);
+                if(response.status==200) {
+                    toastSuccess("Thành công",data);
+                } else {
+                    toastError("Thất bại",data);
+                }
                 refreshApp();
             } catch (err) {
                 console.error(err);
@@ -242,6 +257,7 @@ function DetailInvoice({ idInvoice }) {
     }
     return (
         <>
+        <div id="toast-root"></div>
             <div>
                 <h1>
                     Invoice : {detailCurrentInvoice.ma}
@@ -451,7 +467,7 @@ function DetailInvoice({ idInvoice }) {
                                                         className="btn btn-outline-warning"
                                                         onClick={() => {
                                                             // Handle update logic for the selected item
-                                                            updateProductQuantity(selectedHdctId, quantityUpdate[selectedHdctId]);
+                                                            updateProductQuantity(selectedHdctId, quantityUpdate[selectedHdctId]==undefined ?listHDCT.find(h => h.id === selectedHdctId)?.soLuong:quantityUpdate[selectedHdctId]);
                                                             console.log("Updated quantity for ID:", selectedHdctId, "with value:", quantityUpdate[selectedHdctId] || listHDCT.find(h => h.id === selectedHdctId)?.soLuong || 1);
                                                         }}
                                                     >Update</button>
@@ -531,7 +547,7 @@ function DetailInvoice({ idInvoice }) {
                     <br />
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Tiền Khách Trả : </label>
-                        <input className="col-4" type="text" /><span></span>
+                        <input className="col-4" type="number" /><span></span>
                     </div>
                     <br />
                     <div className="row">
@@ -549,6 +565,9 @@ function DetailInvoice({ idInvoice }) {
                     <div className="paying">
                         <button
                             style={{ height: "50px" }}
+                            onClick={()=>{
+                                toastError("error","Thanh toán thành công !")
+                            }}
                             className="col-4 btn btn-primary">Thanh Toán</button>
                     </div>
                 </div>
