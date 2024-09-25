@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { Modal } from 'bootstrap'
-import {toastError,toastInfo,toastSuccess,toastWarning} from "../toastMessage/ToastMessage";
+import { toastError, toastInfo, toastSuccess, toastWarning } from "../toastMessage/ToastMessage";
 
 
 
@@ -18,14 +18,14 @@ function DetailInvoice({ idInvoice }) {
     const [giaGiam, setGiaGiam] = useState(0);
     const [quantityUpdate, setQuantityUpdate] = useState({});
     const [selectedHdctId, setSelectedHdctId] = useState(null); // To track which hdct is being updated
+    const [listCustomer, setListCustomer] = useState([]);
+    const [listVoucher, setListVoucher] = useState([]);
 
-    // console.log(detailCurrentInvoice);
-
-    // console.log(listHDCT);
 
 
     useEffect(() => {
         const fetchDataDetailInvoice = async () => {
+            setGiaGiam(detailCurrentInvoice.voucher  != undefined ? detailCurrentInvoice.voucher.giaTriGiam : 0)
             const response = await fetch(`http://localhost:5050/api/v1/hoa-don/detail/${idInvoice}`);
             const data = await response.json();
             setDetailCurrentInvoice(data);
@@ -50,7 +50,20 @@ function DetailInvoice({ idInvoice }) {
             }
         }
         fetchDataCtsp();
-    }, [])
+        const fetchListCustomer = async () => {
+            try {
+                const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-all-customer`);
+                const data = await response.json();
+                setListCustomer(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        
+        fetchListCustomer();
+        
+    }, [detailCurrentInvoice]);
 
     const refreshApp = () => {
         const fetchDataDetailInvoice = async () => {
@@ -78,6 +91,17 @@ function DetailInvoice({ idInvoice }) {
             }
         }
         fetchDataCtsp();
+        const fetchListCustomer = async () => {
+            try {
+                const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-all-customer`);
+                const data = await response.json();
+                setListCustomer(data);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchListCustomer();
 
     }
     const onQuatityAddChange = (e, productID) => {
@@ -102,11 +126,11 @@ function DetailInvoice({ idInvoice }) {
                     body: HDCTDeleteObj
                 })
                 const data = await response.text();
-               
-                if(response.status==200) {
-                    toastSuccess("thành công",data);
+
+                if (response.status == 200) {
+                    toastSuccess("thành công", data);
                 } else {
-                    toastError("thất bại",data);
+                    toastError("thất bại", data);
                 }
                 refreshApp();
 
@@ -135,7 +159,7 @@ function DetailInvoice({ idInvoice }) {
         try {
             const updateQuantity = async () => {
                 const response = await fetch("http://localhost:5050/api/v1/hoa-don-chi-tiet/update-quantity", {
-                    method: "PUT", // "UPDATE" is not a valid HTTP method; you likely meant "POST" or "PUT"
+                    method: "PUT",
                     body: dataUpdateObj
                 });
 
@@ -152,14 +176,14 @@ function DetailInvoice({ idInvoice }) {
                 }
 
                 // Do something with the returned data (whether it's text or JSON)
-              if(response.status==400) {
-                  toastError("Thất bại",data);
-              } else {
-                toastSuccess("Thành Công",data);
+                if (response.status == 400) {
+                    toastError("Thất bại", data);
+                } else {
+                    toastSuccess("Thành Công", data);
 
-              }
-            console.log(data);
-            
+                }
+                console.log(data);
+
 
                 const modalElement = document.getElementById('modalUpdateQuantity');
                 if (modalElement) {
@@ -178,7 +202,7 @@ function DetailInvoice({ idInvoice }) {
 
             updateQuantity();
         } catch (error) {
-            toastError("Thất bại",error);
+            toastError("Thất bại", error);
         }
     };
 
@@ -194,10 +218,10 @@ function DetailInvoice({ idInvoice }) {
                     body: hdctFormData
                 });
                 const data = await response.text();
-                if(response.status==200) {
-                    toastSuccess("Thêm thành công",data);
+                if (response.status == 200) {
+                    toastSuccess("Thêm thành công", data);
                 } else {
-                    toastError("Thêm thất bại",data);
+                    toastError("Thêm thất bại", data);
                 }
 
                 //close modal
@@ -222,16 +246,16 @@ function DetailInvoice({ idInvoice }) {
         addHDCT();
     }
     const deleteAllHDCT = (idHD) => {
-        const deleteAllHDCT1 = async()=>{
+        const deleteAllHDCT1 = async () => {
             try {
                 const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/delete-all-hdct/${idHD}`, {
                     method: "DELETE"
                 });
-    
-    
+
+
                 const contentType = response.headers.get("content-type");
                 let data;
-    
+
                 if (contentType.includes("application/json")) {
                     data = await response.json(); // Parse as JSON
                 } else if (contentType.includes("text/plain")) {
@@ -239,25 +263,142 @@ function DetailInvoice({ idInvoice }) {
                 } else {
                     data = await response.blob(); // For other types like binary data
                 }
-    
+
                 // Do something with the returned data (whether it's text or JSON)
-                if(response.status==200) {
-                    toastSuccess("Thành công",data);
+                if (response.status == 200) {
+                    toastSuccess("Thành công", data);
                 } else {
-                    toastError("Thất bại",data);
+                    toastError("Thất bại", data);
                 }
                 refreshApp();
             } catch (err) {
                 console.error(err);
-    
+
             }
         }
         deleteAllHDCT1();
-        
+
+    }
+    const addCustomerToInvoice = (idCustomer, idInvoice) => {
+        const dataObj = new FormData();
+        dataObj.append("idCustomer", idCustomer);
+        const callAPI = async () => {
+            try {
+                const response = await fetch(`http://localhost:5050/api/v1/hoa-don/add-customer-to-invoice/${idInvoice}`, {
+                    method: "PUT",
+                    body: dataObj
+                });
+
+
+                const contentType = response.headers.get("content-type");
+                let data;
+
+                if (contentType.includes("application/json")) {
+                    data = await response.json(); // Parse as JSON
+                } else if (contentType.includes("text/plain")) {
+                    data = await response.text(); // Parse as text
+                } else {
+                    data = await response.blob(); // For other types like binary data
+                }
+
+                // Do something with the returned data (whether it's text or JSON)
+                if (response.status == 200) {
+                    toastSuccess("Thành công", data);
+                } else {
+                    toastError("Thất bại", data);
+                }
+                const modalElement = document.getElementById('modalAddCustomer');
+                if (modalElement) {
+                    const modalInstance = Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                        setTimeout(() => {
+                            refreshApp();
+                        }, 200); // Give some time for modal closure
+                    }
+
+                }
+
+
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        callAPI();
+    }
+
+
+    const addVoucherToInvoice = (idVoucher, idInvoice) => {
+        const dataObj = new FormData();
+        dataObj.append("idVoucher", idVoucher);
+        const callAPI = async () => {
+            try {
+                const response = await fetch(`http://localhost:5050/api/v1/hoa-don/add-voucher-to-invoice/${idInvoice}`, {
+                    method: "PUT",
+                    body: dataObj
+                });
+
+
+                const contentType = response.headers.get("content-type");
+                let data;
+
+                if (contentType.includes("application/json")) {
+                    data = await response.json(); // Parse as JSON
+                } else if (contentType.includes("text/plain")) {
+                    data = await response.text(); // Parse as text
+                } else {
+                    data = await response.blob(); // For other types like binary data
+                }
+
+                // Do something with the returned data (whether it's text or JSON)
+                if (response.status == 200) {
+                    toastSuccess("Thành công", data);
+                } else {
+                    toastError("Thất bại", data);
+                }
+                const modalElement = document.getElementById('modalAddVoucher');
+                if (modalElement) {
+                    const modalInstance = Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                        setTimeout(() => {
+                            refreshApp();
+                        }, 200); // Give some time for modal closure
+                    }
+
+                }
+
+
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        callAPI();
+    }
+
+    const getListVoucherValid = (totalMoneyInvoice) => {
+        // const paramObj = new FormData();
+        // paramObj.append("tongTienHD",totalMoneyInvoice);
+        try {
+            const callApi = async () => {
+                const response = await fetch(`http://localhost:5050/api/v1/voucher/get-voucher-valid/${totalMoneyInvoice}`, {
+                    method: "GET"
+                });
+                const data = await response.json();
+                setListVoucher(data);
+
+            }
+            callApi();
+        } catch (error) {
+            console.error(error);
+
+        }
     }
     return (
         <>
-        <div id="toast-root"></div>
+            <div id="toast-root"></div>
             <div>
                 <h1>
                     Invoice : {detailCurrentInvoice.ma}
@@ -306,7 +447,7 @@ function DetailInvoice({ idInvoice }) {
                         >Xóa Hết Sản Phẩm</button>
                     </div>
 
-                    {/* //modal */}
+                    {/* //modal thêm sản phẩm */}
                     <div className="modal fade" id="modalAdd" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ width: "100%" }}>
                         <div className="modal-dialog" style={{ width: "100%", margin: "30px 300px" }}>
                             <div className="modal-content" style={{ width: "1400px" }}>
@@ -467,7 +608,7 @@ function DetailInvoice({ idInvoice }) {
                                                         className="btn btn-outline-warning"
                                                         onClick={() => {
                                                             // Handle update logic for the selected item
-                                                            updateProductQuantity(selectedHdctId, quantityUpdate[selectedHdctId]==undefined ?listHDCT.find(h => h.id === selectedHdctId)?.soLuong:quantityUpdate[selectedHdctId]);
+                                                            updateProductQuantity(selectedHdctId, quantityUpdate[selectedHdctId] == undefined ? listHDCT.find(h => h.id === selectedHdctId)?.soLuong : quantityUpdate[selectedHdctId]);
                                                             console.log("Updated quantity for ID:", selectedHdctId, "with value:", quantityUpdate[selectedHdctId] || listHDCT.find(h => h.id === selectedHdctId)?.soLuong || 1);
                                                         }}
                                                     >Update</button>
@@ -523,8 +664,79 @@ function DetailInvoice({ idInvoice }) {
                         >
                             -Khách Hàng : {detailCurrentInvoice.khachHang == null ? "chưa có" : detailCurrentInvoice.khachHang.hoTen}
                         </label>
-                        <button className="col-4 btn btn-primary">Chọn Khách Hàng</button>
+                        <button className="col-4 btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalAddCustomer"
+                        >Chọn Khách Hàng</button>
                     </div>
+
+                    {/* Modal thêm khách hàng vào hóa đơn */}
+                    <div className="modal fade" id="modalAddCustomer" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ width: "100%" }}>
+                        <div className="modal-dialog" style={{ width: "100%", margin: "30px 300px" }}>
+                            <div className="modal-content" style={{ width: "1400px" }}>
+                                <div className="modal-header">
+                                    <h1 className="modal-title fs-5" id="exampleModalLabel">List Voucher</h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div className="modal-body" >
+
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Họ Tên</th>
+                                                <th scope="col">Giới Tính</th>
+                                                <th scope="col">Số Điện Thoại</th>
+                                                <th scope="col">Email</th>
+                                                <th scope="col">Địa Chỉ</th>
+                                                <th scope="col">Ngày Tạo</th>
+                                                <th scope="col">Trạng Thái</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {listCustomer.map((customer, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <th scope="row">{customer.id}</th>
+                                                        <td>{customer.hoTen}</td>
+                                                        <td>{customer.gioiTinh}</td>
+                                                        <td>{customer.soDienThoai}</td>
+                                                        <td>{customer.email}</td>
+                                                        <td>{customer.diaChi ? customer.diaChi.soNha + " " + customer.diaChi.tenDuong + " " + customer.diaChi.tenQuanhuyen : ""}</td>
+                                                        <td>{customer.ngayTao ? customer.ngayTao[2] + "/" + customer.ngayTao[1] + "/" + customer.ngayTao[0] : ""}</td>
+                                                        <td>{customer.trangThai}</td>
+                                                        <td>
+                                                            <a
+                                                                className='btn btn-primary'
+                                                                onClick={() => {
+                                                                    let isConfirm = window.confirm(`are you sure to add this customer: ${customer.hoTen} to invoice ?`);
+                                                                    if (isConfirm) {
+                                                                        addCustomerToInvoice(customer.id, idInvoice);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                Add</a>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                     <hr />
 
                     <div className="row">
@@ -536,8 +748,82 @@ function DetailInvoice({ idInvoice }) {
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Giảm giá voucher(nếu có) : </label>
                         <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{giaGiam}</label>
-                        <button className="col-3 btn btn-primary">Chọn Voucher</button>
+                        <button
+                            className="col-3 btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalAddVoucher"
+                            onClick={() => {
+                                getListVoucherValid(detailCurrentInvoice.tongTien);
+                            }}
+
+                        >Chọn Voucher</button>
                     </div>
+
+                    {/* Modal add Voucher */}
+                    <div className="modal fade" id="modalAddVoucher" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ width: "100%" }}>
+                        <div className="modal-dialog" style={{ width: "100%", margin: "30px 300px" }}>
+                            <div className="modal-content" style={{ width: "1400px" }}>
+                                <div className="modal-header">
+                                    <h1 className="modal-title fs-5" id="exampleModalLabel">New Product Detail</h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div className="modal-body" >
+
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Tên</th>
+                                                <th scope="col">Mã</th>
+                                                <th scope="col">Giá trị giảm</th>
+                                                <th scope="col">Số Lượng còn lại</th>
+                                                <th scope="col">Ngày Bắt đầu</th>
+                                                <th scope="col">Ngày kết thúc</th>
+                                                <th scope="col">Trạng Thái</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {listVoucher.map((voucher, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <th scope="row">{voucher.id}</th>
+                                                        <td>{voucher.ten}</td>
+                                                        <td>{voucher.ma}</td>
+                                                        <td>{voucher.giaTriGiam}</td>
+                                                        <td>{voucher.soLuong}</td>
+                                                        <td>{voucher.ngayBatDau ? new Date(voucher.ngayBatDau).toLocaleDateString() : ""}</td>
+                                                        <td>{voucher.ngayKetThuc ? new Date(voucher.ngayKetThuc).toLocaleDateString() : ""}</td>
+                                                        <td>{voucher.trangThai}</td>
+                                                        <td>
+                                                            <a
+                                                                className='btn btn-primary'
+                                                                onClick={() => {
+                                                                    let isConfirm = window.confirm(`are you sure to add voucher: ${voucher.en} to invoice ?`);
+                                                                    if (isConfirm) {
+                                                                        addVoucherToInvoice(voucher.id, idInvoice);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                Add</a>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <hr />
 
                     <div className="row">
@@ -565,8 +851,8 @@ function DetailInvoice({ idInvoice }) {
                     <div className="paying">
                         <button
                             style={{ height: "50px" }}
-                            onClick={()=>{
-                                toastError("error","Thanh toán thành công !")
+                            onClick={() => {
+                                toastError("error", "Thanh toán thành công !")
                             }}
                             className="col-4 btn btn-primary">Thanh Toán</button>
                     </div>

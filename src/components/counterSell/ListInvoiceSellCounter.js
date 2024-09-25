@@ -7,8 +7,10 @@ function ListInvoiceSellCounter() {
     const { sellCounterScreen, setSellCounterScreen, invoiceDetail, setInvoiceDetail, setCurrentUI, currentUI } = useContext(GContext);
     const [listInvoice, setListInvoice] = useState([]);
 
+    
     // console.log(listInvoice);
     const refershListHD = ()=>{
+        
         const fetchDataListInvoice = async () => {
             try {
                 const response = await fetch("http://localhost:5050/api/v1/hoa-don/show-all");
@@ -96,7 +98,7 @@ function ListInvoiceSellCounter() {
                                 <th scope="row">{invoice.ma}</th>
                                 <th>{invoice.nhanVien.hoTen}</th>
                                 <th>{invoice.ngayTao[2] + "/" + invoice.ngayTao[1] + "/" + invoice.ngayTao[0]}</th>
-                                <th>{invoice.khachHang==null?"Trống":"invoice.khachHang.hoTen"}</th>
+                                <th>{invoice.khachHang==null?"Trống":invoice.khachHang.hoTen}</th>
                                 <th>{invoice.tongTien}</th>
                                 <th>{invoice.trangThai==0?"Chưa Thanh Toán":"Đã Thanh Toán"}</th>
                                 <th>{invoice.ghiChu}</th>
