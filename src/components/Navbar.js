@@ -117,7 +117,12 @@ function Navbar() {
                             </li>
 
                             <li className="nav-item">
-                                <a className="nav-link" href="#">Quản Lí Hóa Đơn</a>
+                                <a className="nav-link"
+                                    href="#"
+                                    onClick={() => {
+                                        setCurrentUI("toast");
+                                    }}
+                                >Quản Lí Hóa Đơn</a>
                             </li>
 
                             <li className="nav-item">
