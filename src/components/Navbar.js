@@ -120,7 +120,7 @@ function Navbar() {
                                 <a className="nav-link"
                                     href="#"
                                     onClick={() => {
-                                        setCurrentUI("toast");
+                                        setCurrentUI("InvoiceManagement");
                                     }}
                                 >Quản Lí Hóa Đơn</a>
                             </li>

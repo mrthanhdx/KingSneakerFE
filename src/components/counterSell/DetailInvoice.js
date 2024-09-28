@@ -20,15 +20,19 @@ function DetailInvoice({ idInvoice }) {
     const [selectedHdctId, setSelectedHdctId] = useState(null); // To track which hdct is being updated
     const [listCustomer, setListCustomer] = useState([]);
     const [listVoucher, setListVoucher] = useState([]);
+    const [tienKhachTra, setTienKhachTra] = useState(0);
+    const [tienThua, setTienThua] = useState("chưa đủ");
+    const [ghiChu, setGhiChu] = useState("");
 
+    console.log("infinite loop");
 
 
     useEffect(() => {
         const fetchDataDetailInvoice = async () => {
-            setGiaGiam(detailCurrentInvoice.voucher  != undefined ? detailCurrentInvoice.voucher.giaTriGiam : 0)
             const response = await fetch(`http://localhost:5050/api/v1/hoa-don/detail/${idInvoice}`);
             const data = await response.json();
             setDetailCurrentInvoice(data);
+            setGiaGiam(data.voucher != undefined ? data.voucher.giaTriGiam : 0)
         }
         fetchDataDetailInvoice();
 
@@ -60,18 +64,20 @@ function DetailInvoice({ idInvoice }) {
                 console.error(error);
             }
         }
-        
+
         fetchListCustomer();
-        
-    }, [detailCurrentInvoice]);
+
+    }, []);
 
     const refreshApp = () => {
         const fetchDataDetailInvoice = async () => {
             const response = await fetch(`http://localhost:5050/api/v1/hoa-don/detail/${idInvoice}`);
             const data = await response.json();
             setDetailCurrentInvoice(data);
+            setGiaGiam(data.voucher != undefined ? data.voucher.giaTriGiam : 0)
         }
         fetchDataDetailInvoice();
+
 
         const fetchListProductDetail = async () => {
             const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`);
@@ -142,6 +148,35 @@ function DetailInvoice({ idInvoice }) {
 
     }
 
+    const onTienKhachTraChange = (e) => {
+        var tkt;
+
+        try {
+            tkt = Number(e.target.value);
+            if (tkt < 0 || tkt == undefined) {
+                setTienKhachTra(0);
+            } else if (typeof tkt != "number") {
+                setTienKhachTra(0);
+                console.log("hi");
+
+            } else {
+                setTienKhachTra(tkt);
+                if (tkt - (detailCurrentInvoice.tongTien - giaGiam) < 0) {
+                    setTienThua("chưa đủ");
+                } else {
+                    setTienThua(tkt - (detailCurrentInvoice.tongTien - giaGiam));
+                }
+            }
+        } catch {
+            setTienKhachTra(0);
+        }
+
+
+
+    }
+    const onGhiChuChange = (e) => {
+        setGhiChu(e.target.value)
+    }
 
     const onProductQuantityUpdateChange = (e, idHdct) => {
         setQuantityUpdate(prevQuantityUpdate => ({
@@ -153,8 +188,8 @@ function DetailInvoice({ idInvoice }) {
     const updateProductQuantity = (idHDCT, soLuongUpdate) => {
         const dataUpdateObj = new FormData();
         dataUpdateObj.append("idHDCT", idHDCT);
-        console.log(soLuongUpdate);
         dataUpdateObj.append("soLuongUpdate", soLuongUpdate);
+        dataUpdateObj.append("idHD", idInvoice);
 
         try {
             const updateQuantity = async () => {
@@ -279,6 +314,56 @@ function DetailInvoice({ idInvoice }) {
         deleteAllHDCT1();
 
     }
+
+    const handleCheckout = () => {
+        console.log(tienThua);
+
+        if (listHDCT == 0) {
+            toastError("Payment failed", "Invoice cart has no product now, to buy product click Thêm Sản Phẩm button");
+        }
+        else if (detailCurrentInvoice.khachHang == null) {
+            toastError("Payment failed", "You're not add customer to this invoice. to add customer click on Chọn Khách Hàng button");
+        } else if (tienThua == "chưa đủ") {
+            toastError("Payment failed", "customer now are not paying enough money for this invoice.");
+        } else {
+            const CallAPI = async () => {
+                try {
+                    const checkoutFormData = new FormData();
+                    checkoutFormData.append("tienKhachTra", tienKhachTra);
+                    checkoutFormData.append("idHD", idInvoice);
+                    checkoutFormData.append("doanhThu", detailCurrentInvoice.tongTien - giaGiam);
+                    checkoutFormData.append("ghiChu", ghiChu);
+                    checkoutFormData.append("tienThua", tienThua);
+
+
+                    const response = await fetch("http://localhost:5050/api/v1/hoa-don/checkout", {
+                        method: "PUT",
+                        body: checkoutFormData
+                    });
+                    const data = await response.text();
+                    if (response.status == 200) {
+                        toastSuccess("Thanh Toan thành công", data);
+                        setTimeout(() => {
+                            setTienKhachTra(0);
+                            setTienThua(0);
+                            setSellCounterScreen("listInvoice")
+                        }, 3000)
+                    } else {
+                        toastError("Thanh Toan thất bại", data);
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                }
+
+            }
+            CallAPI();
+        }
+
+    }
+
+
+
     const addCustomerToInvoice = (idCustomer, idInvoice) => {
         const dataObj = new FormData();
         dataObj.append("idCustomer", idCustomer);
@@ -354,6 +439,7 @@ function DetailInvoice({ idInvoice }) {
                 // Do something with the returned data (whether it's text or JSON)
                 if (response.status == 200) {
                     toastSuccess("Thành công", data);
+
                 } else {
                     toastError("Thất bại", data);
                 }
@@ -741,13 +827,13 @@ function DetailInvoice({ idInvoice }) {
 
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Tổng Tiền : </label>
-                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{detailCurrentInvoice.tongTien}</label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{detailCurrentInvoice.tongTien + " vnd"}</label>
 
                     </div>
                     <br />
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Giảm giá voucher(nếu có) : </label>
-                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{giaGiam}</label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{giaGiam + " vnd"}</label>
                         <button
                             className="col-3 btn btn-primary"
                             data-bs-toggle="modal"
@@ -828,23 +914,35 @@ function DetailInvoice({ idInvoice }) {
 
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Số Tiền Thanh toán : </label>
-                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{detailCurrentInvoice.tongTien - giaGiam} </label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{detailCurrentInvoice.tongTien - giaGiam + " vnd"} </label>
                     </div>
                     <br />
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Tiền Khách Trả : </label>
-                        <input className="col-4" type="number" /><span></span>
+                        <input
+                            value={tienKhachTra}
+                            onChange={(e) => {
+                                onTienKhachTraChange(e);
+                            }}
+                            className="col-4" type="number" /><span></span>
                     </div>
                     <br />
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Tiền Thừa : </label>
-                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>... </label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>{typeof tienThua == "number" ? tienThua + " vnd" : tienThua}</label>
                     </div>
                     <br />
 
                     <label htmlFor="note" style={{ fontSize: "18px", fontWeight: "bold" }}>Ghi Chú</label>
                     <br />
-                    <textarea id="note" style={{ width: "400px", height: "80px" }} name=""></textarea>
+                    <textarea id="note"
+                        style={{ width: "400px", height: "80px" }}
+                        value={ghiChu}
+                        onChange={(e) => {
+                            onGhiChuChange(e);
+                        }}>
+
+                    </textarea>
                     <br />
                     <br />
 
@@ -852,7 +950,7 @@ function DetailInvoice({ idInvoice }) {
                         <button
                             style={{ height: "50px" }}
                             onClick={() => {
-                                toastError("error", "Thanh toán thành công !")
+                                handleCheckout();
                             }}
                             className="col-4 btn btn-primary">Thanh Toán</button>
                     </div>

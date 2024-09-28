@@ -12,9 +12,10 @@ import Merterial from './propertiesManagement/Merterial';
 import CounterSell from './counterSell/CounterSell';
 import { ContextProvider } from './Context';
 import ToastMessage from './toastMessage/ToastMessage';
+import ListInvoiceManagement from './invoiceManagement/ListInvoiceManagement';
+import InvoiceManagement from './invoiceManagement/InvoiceManagement';
 function Container() {
     const { currentUI, setCurrentUI } = useContext(GContext);
-console.log(currentUI);
 
     return (
 
@@ -27,7 +28,7 @@ console.log(currentUI);
             {currentUI === "SizeManagement" && <SizeManage />}
             {currentUI === "StyleManagement" && <StyleManage />}
             {currentUI === "MerterialManagement" && <Merterial/>}
-            {currentUI === "toast" && <ToastMessage/>}
+            {currentUI === "InvoiceManagement" && <InvoiceManagement/>}
 
             {currentUI == "SellAtCounter" &&
                 <ContextProvider>
