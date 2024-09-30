@@ -84,6 +84,7 @@ function ListInvoiceSellCounter() {
 
     return (
         <>
+
             <div id="toast-root"></div>
             <h2 className="text-success">Sell in counter</h2>
             <br></br>
@@ -93,7 +94,10 @@ function ListInvoiceSellCounter() {
                 style={{ marginRight: "1600px", width: "140px", height: "60px" }}
                 className="btn btn-success"
                 onClick={() => {
-                    createNewHoaDon();
+                    const isConfirm = window.confirm("are you sure to create a new invoice ?");
+                    if (isConfirm) {
+                        createNewHoaDon();
+                    }
                 }}
             >New Invoice</button>
             <br></br>
@@ -130,15 +134,18 @@ function ListInvoiceSellCounter() {
                                         style={{ marginRight: "10px" }}
                                         className="btn btn-danger"
                                         onClick={() => {
-                                         let confirm = window.confirm("are you sure to cancel this invoice ?")
-                                                if(confirm){
-                                                    cancelInvoice(invoice.id)
-                                                }
+                                            let confirm = window.confirm("are you sure to cancel this invoice ?")
+                                            if (confirm) {
+                                                cancelInvoice(invoice.id)
+                                            }
                                         }}>Cancel Invoice</button>
                                     <button
                                         className="btn btn-primary"
                                         onClick={() => {
-                                            openInvoiceDetail(invoice.id);
+                                            let confirm = window.confirm("are you sure to open detail this invoice ?")
+                                            if (confirm) {
+                                                openInvoiceDetail(invoice.id);
+                                            }
                                         }}>Detail</button>
                                 </td>
                             </tr>
