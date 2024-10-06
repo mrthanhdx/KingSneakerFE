@@ -5,7 +5,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function LogForm({ setStateForm }) {
   const [form, setForm] = useState("loginForm");
+  const [formLogin,setFormLogin] = useState({
+    username:"",
+    password:""
+  })
   console.log(form);
+
+
+
 
   return (
     <div>
@@ -90,7 +97,7 @@ function LogForm({ setStateForm }) {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#f8f9fa',
+            backgroundColor: '#f8f9fa'
           }}
         >
           <div
