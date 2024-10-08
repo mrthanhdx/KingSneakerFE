@@ -8,7 +8,7 @@ import { toastError, toastInfo, toastSuccess, toastWarning } from "../toastMessa
 
 
 
-function DetailInvoice({ idInvoice }) {
+function DetailInvoice({ idInvoice}) {
     library.add(fas);
     const [listProductDetail, setlistProductDetail] = useState([]);
     const [quantityAdd, setQuantityAdd] = useState({});
@@ -37,7 +37,12 @@ function DetailInvoice({ idInvoice }) {
         fetchDataDetailInvoice();
 
         const fetchListProductDetail = async () => {
-            const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`);
+            const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`,{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
+                }
+            });
+
             const data = await response.json();
             setListHDCT(data);
         }
@@ -45,7 +50,13 @@ function DetailInvoice({ idInvoice }) {
 
         const fetchDataCtsp = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/chi-tiet-san-pham/show-all",
+                    {
+                        headers:{
+                            Authorization:`Bearer ${localStorage.getItem("token")}`
+                        }
+                    }
+                );
                 const data = await response.json();
                 setlistProductDetail(data);
             }
