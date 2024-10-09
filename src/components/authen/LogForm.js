@@ -6,6 +6,8 @@ import { callApi } from '../axios_helper';
 import { toastError, toastSuccess } from '../toastMessage/ToastMessage';
 import Container from '../Container';
 import HomePage from '../../onlineSell/HomePage';
+import Navbar from '../Navbar';
+import { ContextProvider } from '../Context';
 
 function LogForm({ setStateForm }) {
   const [form, setForm] = useState("loginForm");
@@ -65,7 +67,11 @@ function LogForm({ setStateForm }) {
 
   return (
     <>
-      {role == "ROLE_ADMIN" && <Container />}
+      {role == "ROLE_ADMIN" &&
+        <ContextProvider>
+          <Navbar />
+          <Container />
+        </ContextProvider>}
       {role == "CUSTOMER_ROLE" && <HomePage />}
       {role == null &&
         <div>

@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { GContext } from "../Context";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { fas } from '@fortawesome/free-solid-svg-icons';
+import { faL, fas } from '@fortawesome/free-solid-svg-icons';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { Modal } from 'bootstrap'
 import { toastError, toastInfo, toastSuccess, toastWarning } from "../toastMessage/ToastMessage";
+import { callApi } from "../axios_helper";
 
 
 
-function DetailInvoice({ idInvoice}) {
+function DetailInvoice({ idInvoice }) {
     library.add(fas);
     const [listProductDetail, setlistProductDetail] = useState([]);
     const [quantityAdd, setQuantityAdd] = useState({});
@@ -29,7 +30,11 @@ function DetailInvoice({ idInvoice}) {
 
     useEffect(() => {
         const fetchDataDetailInvoice = async () => {
-            const response = await fetch(`http://localhost:5050/api/v1/hoa-don/detail/${idInvoice}`);
+            const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don/detail/${idInvoice}`,{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             const data = await response.json();
             setDetailCurrentInvoice(data);
             setGiaGiam(data.voucher != undefined ? data.voucher.giaTriGiam : 0)
@@ -37,9 +42,9 @@ function DetailInvoice({ idInvoice}) {
         fetchDataDetailInvoice();
 
         const fetchListProductDetail = async () => {
-            const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`,{
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem("token")}`
+            const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
 
@@ -52,8 +57,8 @@ function DetailInvoice({ idInvoice}) {
             try {
                 const response = await fetch("http://localhost:5050/admin/api/v1/chi-tiet-san-pham/show-all",
                     {
-                        headers:{
-                            Authorization:`Bearer ${localStorage.getItem("token")}`
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
                         }
                     }
                 );
@@ -67,7 +72,11 @@ function DetailInvoice({ idInvoice}) {
         fetchDataCtsp();
         const fetchListCustomer = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-all-customer`);
+                const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/get-all-customer`,{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListCustomer(data);
             }
@@ -82,7 +91,11 @@ function DetailInvoice({ idInvoice}) {
 
     const refreshApp = () => {
         const fetchDataDetailInvoice = async () => {
-            const response = await fetch(`http://localhost:5050/api/v1/hoa-don/detail/${idInvoice}`);
+            const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don/detail/${idInvoice}`,{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             const data = await response.json();
             setDetailCurrentInvoice(data);
             setGiaGiam(data.voucher != undefined ? data.voucher.giaTriGiam : 0)
@@ -91,7 +104,11 @@ function DetailInvoice({ idInvoice}) {
 
 
         const fetchListProductDetail = async () => {
-            const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`);
+            const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/get-list-hdct/${idInvoice}`,{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             const data = await response.json();
             setListHDCT(data);
         }
@@ -99,7 +116,11 @@ function DetailInvoice({ idInvoice}) {
 
         const fetchDataCtsp = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/chi-tiet-san-pham/show-all", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistProductDetail(data);
             }
@@ -108,9 +129,14 @@ function DetailInvoice({ idInvoice}) {
             }
         }
         fetchDataCtsp();
+
         const fetchListCustomer = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/get-all-customer`);
+                const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/get-all-customer`,{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListCustomer(data);
             }
@@ -138,9 +164,12 @@ function DetailInvoice({ idInvoice}) {
         HDCTDeleteObj.append("idHd", idHD);
         try {
             const deleteHdct = async () => {
-                const response = await fetch("http://localhost:5050/api/v1/hoa-don-chi-tiet/delete-hdct", {
+                const response = await fetch("http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/delete-hdct", {
                     method: "DELETE",
-                    body: HDCTDeleteObj
+                    body: HDCTDeleteObj,
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 })
                 const data = await response.text();
 
@@ -204,9 +233,12 @@ function DetailInvoice({ idInvoice}) {
 
         try {
             const updateQuantity = async () => {
-                const response = await fetch("http://localhost:5050/api/v1/hoa-don-chi-tiet/update-quantity", {
+                const response = await fetch("http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/update-quantity", {
                     method: "PUT",
-                    body: dataUpdateObj
+                    body: dataUpdateObj,
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
 
                 // Dynamically determine the response type
@@ -259,9 +291,12 @@ function DetailInvoice({ idInvoice}) {
                 hdctFormData.append("idCTSP", idCTSP);
                 hdctFormData.append("idHD", idHD);
                 hdctFormData.append("soLuong", soLuong);
-                const response = await fetch("http://localhost:5050/api/v1/hoa-don-chi-tiet/new-hdct", {
+                const response = await fetch("http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/new-hdct", {
                     method: "POST",
-                    body: hdctFormData
+                    body: hdctFormData,
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.text();
                 if (response.status == 200) {
@@ -294,8 +329,11 @@ function DetailInvoice({ idInvoice}) {
     const deleteAllHDCT = (idHD) => {
         const deleteAllHDCT1 = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/hoa-don-chi-tiet/delete-all-hdct/${idHD}`, {
-                    method: "DELETE"
+                const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don-chi-tiet/delete-all-hdct/${idHD}`, {
+                    method: "DELETE",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
 
 
@@ -347,9 +385,12 @@ function DetailInvoice({ idInvoice}) {
                     checkoutFormData.append("tienThua", tienThua);
 
 
-                    const response = await fetch("http://localhost:5050/api/v1/hoa-don/checkout", {
+                    const response = await fetch("http://localhost:5050/admin/api/v1/hoa-don/checkout", {
                         method: "PUT",
-                        body: checkoutFormData
+                        body: checkoutFormData,
+                        headers:{
+                            Authorization:`Bearer ${localStorage.getItem("token")}`
+                        }
                     });
                     const data = await response.text();
                     if (response.status == 200) {
@@ -380,9 +421,12 @@ function DetailInvoice({ idInvoice}) {
         dataObj.append("idCustomer", idCustomer);
         const callAPI = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/hoa-don/add-customer-to-invoice/${idInvoice}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don/add-customer-to-invoice/${idInvoice}`, {
                     method: "PUT",
-                    body: dataObj
+                    body: dataObj,
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
 
 
@@ -430,9 +474,12 @@ function DetailInvoice({ idInvoice}) {
         dataObj.append("idVoucher", idVoucher);
         const callAPI = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/hoa-don/add-voucher-to-invoice/${idInvoice}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don/add-voucher-to-invoice/${idInvoice}`, {
                     method: "PUT",
-                    body: dataObj
+                    body: dataObj,
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
 
 
@@ -480,8 +527,11 @@ function DetailInvoice({ idInvoice}) {
         // paramObj.append("tongTienHD",totalMoneyInvoice);
         try {
             const callApi = async () => {
-                const response = await fetch(`http://localhost:5050/api/v1/voucher/get-voucher-valid/${totalMoneyInvoice}`, {
-                    method: "GET"
+                const response = await fetch(`http://localhost:5050/admin/api/v1/voucher/get-voucher-valid/${totalMoneyInvoice}`, {
+                    method: "GET",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.json();
                 setListVoucher(data);
