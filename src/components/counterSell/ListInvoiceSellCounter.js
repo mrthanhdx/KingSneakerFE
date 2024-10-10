@@ -14,7 +14,11 @@ function ListInvoiceSellCounter() {
 
         const fetchDataListInvoice = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/hoa-don/show-listInvoice-counter");
+                const response = await fetch("http://localhost:5050/admin/api/v1/hoa-don/show-listInvoice-counter",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListInvoice(data)
             } catch (err) {
@@ -29,7 +33,13 @@ function ListInvoiceSellCounter() {
 
         const fetchDataListInvoice = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/hoa-don/show-listInvoice-counter");
+                const response = await fetch("http://localhost:5050/admin/api/v1/hoa-don/show-listInvoice-counter",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                    }
+                );
                 const data = await response.json();
                 setListInvoice(data)
             } catch (err) {
@@ -47,8 +57,11 @@ function ListInvoiceSellCounter() {
     const createNewHoaDon = () => {
         let newHD = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/hoa-don/new-hoa-don", {
-                    method: "POST"
+                const response = await fetch("http://localhost:5050/admin/api/v1/hoa-don/new-hoa-don", {
+                    method: "POST",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.text();
                 console.log(data);
@@ -64,7 +77,10 @@ function ListInvoiceSellCounter() {
     const cancelInvoice = (idInvoice) => {
         let callAPI = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/hoa-don/cancel-hoa-don/${idInvoice}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/hoa-don/cancel-hoa-don/${idInvoice}`, {
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    },
                     method: "PUT"
                 });
                 const data = await response.text();
