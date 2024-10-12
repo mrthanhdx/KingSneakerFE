@@ -19,7 +19,11 @@ function SizeManage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/kich-co/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/kich-co/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistSize(data);
             }
@@ -33,7 +37,11 @@ function SizeManage() {
     const refreshlistSize = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/kich-co/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/kich-co/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistSize(data);
                 console.log("refreshed");
@@ -68,10 +76,10 @@ function SizeManage() {
         const submitData = async () => {
             console.log(123);
 
-            const response = await fetch("http://localhost:5050/api/v1/kich-co/new-kich-co", {
+            const response = await fetch("http://localhost:5050/admin/api/v1/kich-co/new-kich-co", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(formData)
             })
@@ -98,8 +106,11 @@ function SizeManage() {
     const deleteSize = (id) => {
         const delSize = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/kich-co/delete-kich-co/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/kich-co/delete-kich-co/${id}`, {
                     method: "DELETE",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.json();
                 console.log(data);
@@ -118,12 +129,12 @@ function SizeManage() {
         e.preventDefault();
         const updateData = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/kich-co/update-kich-co/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/kich-co/update-kich-co/${id}`, {
                     method: "PUT",
                     body: JSON.stringify(formDataUpdate),
-                    headers: {
-                        "Content-Type": "application/json"
-                   },
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    },
                 })
                 
                 const data = await response.json();

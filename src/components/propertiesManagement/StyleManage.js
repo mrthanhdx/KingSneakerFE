@@ -19,7 +19,11 @@ function StyleManage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/kieu-dang/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/kieu-dang/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistStyle(data);
             }
@@ -33,7 +37,11 @@ function StyleManage() {
     const refreshlistStyle = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/kieu-dang/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/kieu-dang/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistStyle(data);
                 console.log("refreshed");
@@ -68,10 +76,10 @@ function StyleManage() {
         const submitData = async () => {
             console.log(123);
 
-            const response = await fetch("http://localhost:5050/api/v1/kieu-dang/new-kieu-dang", {
+            const response = await fetch("http://localhost:5050/admin/api/v1/kieu-dang/new-kieu-dang", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(formData)
             })
@@ -98,8 +106,11 @@ function StyleManage() {
     const deleteStyle = (id) => {
         const delStyle = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/kieu-dang/delete-kieu-dang/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/kieu-dang/delete-kieu-dang/${id}`, {
                     method: "DELETE",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.json();
                 console.log(data);
@@ -118,12 +129,12 @@ function StyleManage() {
         e.preventDefault();
         const updateData = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/kieu-dang/update-kieu-dang/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/kieu-dang/update-kieu-dang/${id}`, {
                     method: "PUT",
                     body: JSON.stringify(formDataUpdate),
-                    headers: {
-                        "Content-Type": "application/json"
-                   },
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    },
                 })
                 
                 const data = await response.json();

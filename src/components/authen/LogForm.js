@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { callApi } from '../axios_helper';
 import { toastError, toastSuccess } from '../toastMessage/ToastMessage';
 import Container from '../Container';
-import HomePage from '../../onlineSell/HomePage';
+import HomePage from '../../onlineSell/NavigationPage';
 import Navbar from '../Navbar';
 import { ContextProvider } from '../Context';
 
@@ -42,15 +42,12 @@ function LogForm({ setStateForm }) {
         method: "POST",
         body: form1
       })
-      console.log(response.status);
 
       if (response.status == 200) {
         const data = await response.json();
-        // console.log(data);
-        console.log(data);
         toastSuccess("login success", "Hi " + data.fullName);
         localStorage.setItem("token", data.token);
-        console.log(data);
+        localStorage.setItem("user", JSON.stringify(data));
         setRole(data.role);
       } else {
         toastError(response.status, "Unknown User !");
@@ -63,23 +60,26 @@ function LogForm({ setStateForm }) {
     }
   }
 
+  console.log(role);
+  
   // console.log(localStorage.getItem("token"));
 
   return (
     <>
       {role == "ROLE_ADMIN" &&
         <ContextProvider>
-          <Navbar />
+          <Navbar setStateForm={setStateForm} />
           <Container />
         </ContextProvider>}
-      {role == "CUSTOMER_ROLE" && <HomePage />}
+      {role == "ROLE_CUSTOMER" && <HomePage setStateForm={setStateForm} />}
       {role == null &&
         <div>
           <div id="toast-root"></div>
           <button style={{ left: "50px", top: "50px", position: "absolute" }}
             onClick={() => {
               setStateForm("logout");
-              console.log("login");
+              localStorage.clear("token");
+              localStorage.clear("user");
 
             }} className='btn btn-primary'>Visit website without login</button>
           {form === 'loginForm' &&

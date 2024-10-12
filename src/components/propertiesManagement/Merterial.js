@@ -19,7 +19,11 @@ function Merterial() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/chat-lieu/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/chat-lieu/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistMerterial(data);
             }
@@ -33,7 +37,11 @@ function Merterial() {
     const refreshlistMerterial = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/chat-lieu/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/chat-lieu/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistMerterial(data);
                 console.log("refreshed");
@@ -68,10 +76,10 @@ function Merterial() {
         const submitData = async () => {
             console.log(123);
 
-            const response = await fetch("http://localhost:5050/api/v1/chat-lieu/new-chat-lieu", {
+            const response = await fetch("http://localhost:5050/admin/api/v1/chat-lieu/new-chat-lieu", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(formData)
             })
@@ -98,7 +106,7 @@ function Merterial() {
     const deleteMerterial = (id) => {
         const delMerterial = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/chat-lieu/delete-chat-lieu/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/chat-lieu/delete-chat-lieu/${id}`, {
                     method: "DELETE",
                 });
                 const data = await response.json();
@@ -118,12 +126,12 @@ function Merterial() {
         e.preventDefault();
         const updateData = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/chat-lieu/update-chat-lieu/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/chat-lieu/update-chat-lieu/${id}`, {
                     method: "PUT",
                     body: JSON.stringify(formDataUpdate),
-                    headers: {
-                        "Content-Type": "application/json"
-                   },
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    },
                 })
                 
                 const data = await response.json();

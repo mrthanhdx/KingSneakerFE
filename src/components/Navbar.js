@@ -3,7 +3,7 @@ import logo from "../image/logo.png"
 import { GContext } from "./Context";
 
 
-function Navbar() {
+function Navbar({ setStateForm }) {
     const { currentUI, setCurrentUI } = useContext(GContext);
 
 
@@ -133,10 +133,23 @@ function Navbar() {
                                 <a className="nav-link disabled" aria-disabled="true">Disabled</a>
                             </li>
                         </ul>
-                        <form className="d-flex" role="search">
+                        {/* <form className="d-flex" role="search">
                             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"></input>
                             <button className="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+                        </form> */}
+                        <div className="row" style={{ width: "400px" }}>
+                            <img src="" alt="avatar" style={{ width: "50px" }} />
+                            <span style={{ width: "200px" }}>Hi {JSON.parse(localStorage.getItem("user")).fullName}</span>
+                            <button
+                                style={{ width: "100px" }}
+                                className="btn btn-dark"
+                                onClick={()=>{
+                                    setStateForm("logout");
+                                    localStorage.clear("token");
+                                    localStorage.clear("user");
+                                }}
+                            >Logout</button>
+                        </div>
                     </div>
                 </div>
             </nav>

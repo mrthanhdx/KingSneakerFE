@@ -19,7 +19,11 @@ function ManuefacturerManage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/NSX/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/NSX/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistManuefacturer(data);
             }
@@ -33,7 +37,11 @@ function ManuefacturerManage() {
     const refreshlistManuefacturer = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/NSX/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/NSX/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistManuefacturer(data);
                 console.log("refreshed");
@@ -68,10 +76,10 @@ function ManuefacturerManage() {
         const submitData = async () => {
             console.log(123);
 
-            const response = await fetch("http://localhost:5050/api/v1/NSX/new-nsx", {
+            const response = await fetch("http://localhost:5050/admin/api/v1/NSX/new-nsx", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(formData)
             })
@@ -98,8 +106,11 @@ function ManuefacturerManage() {
     const deleteManuefacturer = (id) => {
         const delManuefacturer = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/NSX/delete-nsx/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/NSX/delete-nsx/${id}`, {
                     method: "DELETE",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.json();
                 console.log(data);
@@ -118,12 +129,12 @@ function ManuefacturerManage() {
         e.preventDefault();
         const updateData = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/NSX/update-nsx/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/NSX/update-nsx/${id}`, {
                     method: "PUT",
                     body: JSON.stringify(formDataUpdate),
-                    headers: {
-                        "Content-Type": "application/json"
-                   },
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    },
                 })
                 
                 const data = await response.json();

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Modal } from 'bootstrap'
+import { Modal } from 'bootstrap';
 
 function ColorManage() {
 
@@ -18,7 +18,11 @@ function ColorManage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/mau-sac/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/mau-sac/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListColor(data);
             }
@@ -32,7 +36,11 @@ function ColorManage() {
     const refreshListColor = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/mau-sac/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/mau-sac/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListColor(data);
                 console.log("refreshed");
@@ -67,10 +75,10 @@ function ColorManage() {
         const submitData = async () => {
             console.log(123);
 
-            const response = await fetch("http://localhost:5050/api/v1/mau-sac/new-mau-sac", {
+            const response = await fetch("http://localhost:5050/admin/api/v1/mau-sac/new-mau-sac", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(formData)
             })
@@ -97,8 +105,11 @@ function ColorManage() {
     const deleteColor = (id) => {
         const delColor = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/mau-sac/delete-mau-sac/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/mau-sac/delete-mau-sac/${id}`, {
                     method: "DELETE",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.json();
                 console.log(data);
@@ -117,12 +128,12 @@ function ColorManage() {
         e.preventDefault();
         const updateData = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/mau-sac/update-mau-sac/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/mau-sac/update-mau-sac/${id}`, {
                     method: "PUT",
                     body: JSON.stringify(formDataUpdate),
-                    headers: {
-                        "Content-Type": "application/json"
-                   },
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 })
                 
                 const data = await response.json();
