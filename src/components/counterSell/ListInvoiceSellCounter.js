@@ -113,6 +113,7 @@ function ListInvoiceSellCounter() {
                     const isConfirm = window.confirm("are you sure to create a new invoice ?");
                     if (isConfirm) {
                         createNewHoaDon();
+                        toastSuccess("Success","Create new Invoice Successfully !")
                     }
                 }}
             >New Invoice</button>

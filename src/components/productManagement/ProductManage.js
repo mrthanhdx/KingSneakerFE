@@ -25,7 +25,11 @@ function ProductManage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/san-pham/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/san-pham/show-all",{
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistProduct(data);
             }
@@ -39,7 +43,11 @@ function ProductManage() {
     const refreshlistProduct = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/san-pham/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/san-pham/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistProduct(data);
                 console.log("refreshed");
@@ -74,10 +82,10 @@ function ProductManage() {
         const submitData = async () => {
             console.log(123);
 
-            const response = await fetch("http://localhost:5050/api/v1/san-pham/them-san-pham", {
+            const response = await fetch("http://localhost:5050/admin/api/v1/san-pham/them-san-pham", {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(formData)
             })
@@ -126,11 +134,11 @@ function ProductManage() {
         e.preventDefault();
         const updateData = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/san-pham/update-san-pham/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/san-pham/update-san-pham/${id}`, {
                     method: "PUT",
                     body: JSON.stringify(formDataUpdate),
-                    headers: {
-                        "Content-Type": "application/json"
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
                     },
                 })
 
@@ -149,11 +157,14 @@ function ProductManage() {
     }
     const toggleProductStatus = (idProduct, status) => {
         const updateStatus = async () => {
-            const url = `http://localhost:5050/api/v1/san-pham/update-trang-thai/${idProduct}?status=${status}`;
+            const url = `http://localhost:5050/admin/api/v1/san-pham/update-trang-thai/${idProduct}?status=${status}`;
             console.log(url);
 
             const response = await fetch(url, {
-                method: "PUT"
+                method: "PUT",
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
+                }
             });
             const statusResult = response.status;
             console.log(statusResult);

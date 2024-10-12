@@ -19,7 +19,11 @@ function BrandManage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/thuong-hieu/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/thuong-hieu/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistBrand(data);
             }
@@ -33,11 +37,15 @@ function BrandManage() {
     const refreshlistBrand = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/thuong-hieu/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/thuong-hieu/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistBrand(data);
                 console.log("refreshed");
-                
+
             }
             catch (error) {
                 console.error(error);
@@ -68,10 +76,10 @@ function BrandManage() {
         const submitData = async () => {
             console.log(123);
 
-            const response = await fetch("http://localhost:5050/api/v1/thuong-hieu/new-thuong-hieu", {
+            const response = await fetch("http://localhost:5050/admin/api/v1/thuong-hieu/new-thuong-hieu", {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(formData)
             })
@@ -98,8 +106,11 @@ function BrandManage() {
     const deleteBrand = (id) => {
         const delBrand = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/thuong-hieu/delete-thuong-hieu/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/thuong-hieu/delete-thuong-hieu/${id}`, {
                     method: "DELETE",
+                    headers:{
+                        Authorization:`Bearer ${localStorage.getItem("token")}`
+                    }
                 });
                 const data = await response.json();
                 console.log(data);
@@ -114,22 +125,22 @@ function BrandManage() {
 
     }
 
-    const updateBrand = (e,id) => {
+    const updateBrand = (e, id) => {
         e.preventDefault();
         const updateData = async () => {
             try {
-                const response = await fetch(`http://localhost:5050/api/v1/thuong-hieu/update-thuong-hieu/${id}`, {
+                const response = await fetch(`http://localhost:5050/admin/api/v1/thuong-hieu/update-thuong-hieu/${id}`, {
                     method: "PUT",
                     body: JSON.stringify(formDataUpdate),
                     headers: {
-                        "Content-Type": "application/json"
-                   },
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
                 })
-                
+
                 const data = await response.json();
                 console.log("Update successful:", data);
                 refreshlistBrand();
-                
+
             } catch (error) {
                 console.error(error);
             }
@@ -137,11 +148,11 @@ function BrandManage() {
         updateData();
         let modalE = document.getElementById(`exampleModal-${id}`);
         Modal.getInstance(modalE).hide();
-        
+
     }
     return (
         <>
-       <h1> Brand Management</h1>
+            <h1> Brand Management</h1>
             <br></br>
             <br></br>
             {/* <!-- Button trigger modal --> */}
@@ -232,7 +243,7 @@ function BrandManage() {
                                 <td>{Brand.ma}</td>
                                 <td>{Brand.ten}</td>
                                 <td>
-                                   
+
                                     <a
                                         className='btn btn-warning'
                                         data-bs-toggle="modal"
@@ -252,12 +263,12 @@ function BrandManage() {
                                                 <div className="modal-body">
                                                     <form onSubmit={(e) => {
                                                         // e.preventDefault();
-                                                        updateBrand(e,Brand.id);
+                                                        updateBrand(e, Brand.id);
                                                     }}>
-                                                       <div className='mb-3'>
+                                                        <div className='mb-3'>
 
-                                                        <h1>ID: {Brand.id}</h1>
-                                                       </div>
+                                                            <h1>ID: {Brand.id}</h1>
+                                                        </div>
                                                         <div className="mb-3">
                                                             <label htmlFor="exampleMaBrand" className="form-label">Mã Brand</label>
                                                             <input

@@ -85,7 +85,13 @@ function ProductDetails() {
         //fetch data Chi tiet san pham
         const fetchDataCtsp = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/chi-tiet-san-pham/show-all",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                    }
+                );
                 const data = await response.json();
                 setlistProductDetail(data);
             }
@@ -99,7 +105,11 @@ function ProductDetails() {
         //fetch data list mau sac
         const fetchDataProduct = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/san-pham/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/san-pham/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListProduct(data);
             }
@@ -113,7 +123,11 @@ function ProductDetails() {
 
         const fetchDataColor = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/mau-sac/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/mau-sac/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListColor(data);
             }
@@ -128,7 +142,11 @@ function ProductDetails() {
 
         const fetchDataMaterial = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/chat-lieu/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/chat-lieu/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListMaterial(data);
             }
@@ -142,7 +160,11 @@ function ProductDetails() {
         //fetch data list size
         const fetchDataSize = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/kich-co/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/kich-co/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListSize(data);
             }
@@ -156,7 +178,11 @@ function ProductDetails() {
         //fetch data list Brand
         const fetchDataBrand = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/thuong-hieu/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/thuong-hieu/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListBrand(data);
             }
@@ -170,7 +196,11 @@ function ProductDetails() {
         //fetch data list Manuefacturer
         const fetchDataManuefacturer = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/NSX/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/NSX/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListManuefacturer(data);
             }
@@ -184,7 +214,11 @@ function ProductDetails() {
         //fetch data list style
         const fetchDataStyle = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/kieu-dang/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/kieu-dang/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setListStyle(data);
             }
@@ -199,7 +233,11 @@ function ProductDetails() {
     const refreshlistProductDetail = () => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
+                const response = await fetch("http://localhost:5050/admin/api/v1/chi-tiet-san-pham/show-all",{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
                 const data = await response.json();
                 setlistProductDetail(data);
                 console.log("refreshed");
@@ -219,7 +257,7 @@ function ProductDetails() {
             [name]: value
         });
     }
-
+//xu li khi input update thay doi
     function handleInputUpdateChange(e) {
         let { name, value } = e.target;
         setFormDataUpdate({
@@ -340,9 +378,12 @@ function ProductDetails() {
                 }
 
                 try {
-                    const response = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/new-chi-tiet-san-pham", {
+                    const response = await fetch("http://localhost:5050/admin/api/v1/chi-tiet-san-pham/new-chi-tiet-san-pham", {
                         method: "POST",
                         body: formDataObj,
+                        headers:{
+                            Authorization:`Bearer ${localStorage.getItem("token")}`
+                        }
                     });
 
                     if (response.ok) {
@@ -482,9 +523,12 @@ function ProductDetails() {
                 }
 
                 try {
-                    const response = await fetch(`http://localhost:5050/api/v1/chi-tiet-san-pham/update-chi-tiet-san-pham/${id}`, {
+                    const response = await fetch(`http://localhost:5050/admin/api/v1/chi-tiet-san-pham/update-chi-tiet-san-pham/${id}`, {
                         method: "PUT",
                         body: formDataObj,
+                        headers:{
+                            Authorization:`Bearer ${localStorage.getItem("token")}`
+                        }
 
                     });
 

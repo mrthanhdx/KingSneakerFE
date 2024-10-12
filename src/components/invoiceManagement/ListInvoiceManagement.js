@@ -88,7 +88,7 @@ function ListInvoiceManagement() {
                                 <th>{invoice.ngayTao[2] + "/" + invoice.ngayTao[1] + "/" + invoice.ngayTao[0]}</th>
                                 <th>{invoice.khachHang == null ? "Trống" : invoice.khachHang.hoTen}</th>
                                 <th>{invoice.tongTien}</th>
-                                <th className={invoice.trangThai == 0 ? "text-warning" : "text-success"}>{invoice.trangThai == 0 ? "Hóa Đơn Chờ" : "Đã Thanh Toán"}</th>
+                                <th className={invoice.trangThai == 0 ? "text-warning" : invoice.trangThai==1? "text-success":"text-danger"}>{invoice.trangThai == 0 ? "Hóa Đơn Chờ" : invoice.trangThai==1?"Đã Thanh Toán": "Đã Hủy"}</th>
                                 <th>{invoice.ghiChu}</th>
 
                                 <td>
