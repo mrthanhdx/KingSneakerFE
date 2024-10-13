@@ -1,21 +1,20 @@
+import { useContext, useEffect, useState } from "react";
 import { GContext2 } from "./Context2";
 import SearchBar from "./SearchBar";
-import { useContext, useEffect, useState } from "react";
 
 function ListProduct() {
-    const [listProduct, setListProduct] = useState([]); // the product will have properties including ID, productName, material, brand, style
+    const [listProduct, setListProduct] = useState([]);
+    const { setCurrentScreen, showProductDetail } = useContext(GContext2);
+
     useEffect(() => {
         const apiGetListProduct = async () => {
-            const res = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all", {
-                method: "GET"
-            })
+            const res = await fetch("http://localhost:5050/api/v1/chi-tiet-san-pham/show-all");
             const data = await res.json();
             setListProduct(data);
-        }
+        };
         apiGetListProduct();
     }, []);
 
-    const {setCurrentScreen} = useContext(GContext2);
     return (
         <>
             <SearchBar />
@@ -32,7 +31,6 @@ function ListProduct() {
                                 style={{
                                     flex: '1 1 calc(20% - 20px)',
                                     maxWidth: '20%',
-                                    boxSizing: 'border-box',
                                     padding: '10px',
                                     border: '1px solid #ddd',
                                     borderRadius: '5px',
@@ -41,9 +39,7 @@ function ListProduct() {
                                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                                     cursor: 'pointer'
                                 }}
-                                onClick={()=>{
-                                    setCurrentScreen("detailProduct")
-                                }}
+                                onClick={() => showProductDetail(product.id)}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                     e.currentTarget.style.boxShadow = '0px 4px 20px rgba(0, 0, 0, 0.2)';
@@ -70,6 +66,7 @@ function ListProduct() {
                 </div>
             )}
         </>
-    )
+    );
 }
+
 export default ListProduct;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 function ProductDetail({ product }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form, setForm] = useState({
@@ -33,8 +33,9 @@ function ProductDetail({ product }) {
 
     return (
         <>
-            <div style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '5px', maxWidth: '500px', margin: 'auto' }}>
-                <img src={product.pathHinhAnh} alt={product.tenSanPham} style={{ width: '100%', borderRadius: '5px' }} />
+            <div className='row' style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '5px', width: '1000px',margin:"30px" }}>
+                <img className='col-4' src={product.pathHinhAnh} alt={product.tenSanPham} style={{ width: '300px', borderRadius: '5px' }} />
+                <div className='col-6'>
                 <h2>{product.tenSanPham}</h2>
                 <p><strong>Brand:</strong> {product.thuongHieu}</p>
                 <p><strong>Style:</strong> {product.kieuDang}</p>
@@ -42,11 +43,14 @@ function ProductDetail({ product }) {
                 <p><strong>Color:</strong> {product.mauSac}</p>
                 <p><strong>Material:</strong> {product.chatLieu}</p>
                 <p><strong>Origin:</strong> {product.nsx}</p>
+                <p><strong>Remain Quantity:</strong> {product.soLuong}</p>
+
                 <p><strong>Price:</strong> {product.giaBan.toLocaleString()} VND</p>
 
-                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                    <button className="btn btn-primary" onClick={handleBuyNow}>Mua Ngay</button>
-                    <button className="btn btn-secondary">Thêm vào giỏ hàng</button>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '50px' }}>
+                    <button style={{marginLeft:"100px"}} className="btn btn-primary" onClick={handleBuyNow}><FontAwesomeIcon icon="fa-solid fa-dollar-sign" /> Mua Ngay</button>
+                    <button style={{marginLeft:"20px"}} className="btn btn-secondary"><FontAwesomeIcon icon="fa-solid fa-cart-shopping" /> Thêm vào giỏ hàng</button>
+                </div>
                 </div>
             </div>
 
