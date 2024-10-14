@@ -14,7 +14,7 @@ function Container2() {
 return (
     <>
         {currentScreen=="sellOnlineHomePage"&&<ListProduct/>}
-        {currentScreen=="cartInfoPage"&&<CartInfo/>}
+        {currentScreen=="cartInfoPage"&&<CartInfo setCurrentScreen = {setCurrentScreen}/>}
         {currentScreen === "detailProduct" && <ProductDetail product={productDetaill} />}
     </>
 )    
