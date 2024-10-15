@@ -53,12 +53,20 @@ function ProductDetail({ product }) {
 
 
     const addProductToCart = (idProduct) => {
+
         console.log("hello");
         
+
         const formDataObj = new FormData();
+
         formDataObj.append("idCustomer", userObject.id);
+
+
         formDataObj.append("idCtsp", idProduct);
+
         formDataObj.append("quantity", quantityBuy);
+        console.log(132);
+        
 
         const callApi = async () => {
             try {
