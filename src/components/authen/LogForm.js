@@ -16,6 +16,7 @@ function LogForm({ setStateForm }) {
     username: "",
     password: ""
   })
+  const [tokenExpried,setTokenExpried] = useState(10000);
   // console.log(form);
 
 
@@ -48,6 +49,19 @@ function LogForm({ setStateForm }) {
         toastSuccess("login success", "Hi " + data.fullName);
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data));
+        const tokenExpiry = data.tokenExpiry;
+        const currentTime = Date.now();
+        const expirationTime = tokenExpiry - currentTime; // Time left until token expires
+        
+        // Set a timeout to remove the token once it expires
+        setTimeout(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('tokenExpiry');
+            alert('Session expired. Please log in again.');
+            window.location.href = '/login'; // Redirect to login page
+        }, expirationTime);
+        
+
         setRole(data.role);
       } else {
         toastError(response.status, "Unknown User !");
