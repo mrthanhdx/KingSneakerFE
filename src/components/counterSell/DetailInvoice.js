@@ -25,7 +25,6 @@ function DetailInvoice({ idInvoice }) {
     const [tienThua, setTienThua] = useState("chưa đủ");
     const [ghiChu, setGhiChu] = useState("");
 
-    console.log("infinite loop");
 
 
     useEffect(() => {
