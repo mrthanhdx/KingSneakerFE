@@ -65,7 +65,7 @@ function ProductDetail({ product }) {
         formDataObj.append("idCtsp", idProduct);
 
         formDataObj.append("quantity", quantityBuy);
-        console.log(132);
+        console.log(formDataObj);
         
 
         const callApi = async () => {
@@ -79,10 +79,15 @@ function ProductDetail({ product }) {
                 })
                 console.log(res);
                 
-                const data = res.text();
+               if (res.status==200) {
                 toastSuccess("Success","Product added to cart");
+               } else if (res.status==400) {
+                    toastError("failed to add", "product quantity is not valid !")
+               }
 
             } catch (error) {
+                console.log(error);
+                
                 toastError("failed to add Product to cart, check error in console.log");
             }
         }
