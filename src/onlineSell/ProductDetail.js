@@ -11,7 +11,17 @@ function ProductDetail({ product }) {
     });
 
     const [quantityBuy, setQuantityBuy] = useState(1);
-
+    const [cartLocalStorage, setCartLocalStorage] = useState(() => {
+        // Check if 'cart' is valid JSON, otherwise reset it to an empty array
+        try {
+            const cart = localStorage.getItem("cart");
+            return cart ? JSON.parse(cart) : [];
+        } catch (error) {
+            console.error("Invalid JSON in localStorage for 'cart', resetting cart.");
+            localStorage.setItem("cart", JSON.stringify([]));
+            return [];
+        }
+    });
     // Retrieve the JSON string from localStorage
     const userJson = localStorage.getItem("user");
 
@@ -52,47 +62,43 @@ function ProductDetail({ product }) {
     };
 
 
-    const addProductToCart = (idProduct) => {
-
-        console.log("hello");
-        
-
-        const formDataObj = new FormData();
-
-        formDataObj.append("idCustomer", userObject.id);
-
-
-        formDataObj.append("idCtsp", idProduct);
-
-        formDataObj.append("quantity", quantityBuy);
-        console.log(formDataObj);
-        
-
-        const callApi = async () => {
-            try {
-                const res = await fetch("http://localhost:5050/user/api/v1/cart/new-cart-item", {
-                    method: "POST",
-                    body: formDataObj,
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
+    const addProductToCart = (idProduct, product) => {
+        if (localStorage.getItem("user") != null) {
+            const formDataObj = new FormData();
+            formDataObj.append("idCustomer", userObject.id);
+            formDataObj.append("idCtsp", idProduct);
+            formDataObj.append("quantity", quantityBuy);
+            
+            const callApi = async () => {
+                try {
+                    const res = await fetch("http://localhost:5050/user/api/v1/cart/new-cart-item", {
+                        method: "POST",
+                        body: formDataObj,
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                    });
+                    
+                    if (res.status === 200) {
+                        toastSuccess("Success", "Product added to cart");
+                    } else if (res.status === 400) {
+                        toastError("Failed to add", "Product quantity is not valid!");
                     }
-                })
-                console.log(res);
-                
-               if (res.status==200) {
-                toastSuccess("Success","Product added to cart");
-               } else if (res.status==400) {
-                    toastError("failed to add", "product quantity is not valid !")
-               }
-
-            } catch (error) {
-                console.log(error);
-                
-                toastError("failed to add Product to cart, check error in console.log");
-            }
+                } catch (error) {
+                    console.log(error);
+                    toastError("Failed to add product to cart, check error in console.log");
+                }
+            };
+            callApi();
+        } else {
+            // Add product to cart in localStorage if the user is not logged in
+            const updatedCart = [...cartLocalStorage, product];
+    
+            // Update the cart state and localStorage with serialized JSON
+            setCartLocalStorage(updatedCart);
+            localStorage.setItem("cart", JSON.stringify(updatedCart)); // Fix: Store JSON string
         }
-        callApi();
-    }
+    };
     return (
         <>
             <div id="toast-root"></div>
@@ -126,7 +132,7 @@ function ProductDetail({ product }) {
                             style={{ marginLeft: "20px" }}
                             className="btn btn-secondary"
                             onClick={() => {
-                                addProductToCart(product.id);
+                                addProductToCart(product.id,product);
                             }}
                         >
                             <FontAwesomeIcon

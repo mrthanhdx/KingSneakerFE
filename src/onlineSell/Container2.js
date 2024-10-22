@@ -3,6 +3,7 @@ import { GContext2 } from "./Context2";
 import ListProduct from "./ListProduct";
 import CartInfo from "./CartInfo";
 import ProductDetail from "./ProductDetail";
+import UserInfo from "./UserInfo";
 
 
 
@@ -16,6 +17,7 @@ return (
         {currentScreen=="sellOnlineHomePage"&&<ListProduct/>}
         {currentScreen=="cartInfoPage"&&<CartInfo setCurrentScreen = {setCurrentScreen}/>}
         {currentScreen === "detailProduct" && <ProductDetail product={productDetaill} />}
+        {currentScreen==='accountPage' && <UserInfo/>}
     </>
 )    
 }
