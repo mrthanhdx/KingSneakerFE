@@ -74,7 +74,6 @@ function LogForm({ setStateForm }) {
     }
   }
 
-  console.log(role);
   
   // console.log(localStorage.getItem("token"));
 

@@ -6,20 +6,18 @@ function CartInfo(props) {
 
     const [quantityUpdate, setQuantityUpdate] = useState({});
     const [selectedHdctId, setSelectedHdctId] = useState(null); // To track which hdct is being updated
-    const [listHDCT, setListHDCT] = useState([]);
     const [listCartItem, setListCartItem] = useState([]);
     const [listCartItemSelected, setListCartItemSelected] = useState([]);
+    const [listVoucherAvaliable, setListVoucherAvaliable] = useState([]);
+    const [giaTriGiam, setGiaTriGiam] = useState(0);
+    const [idVoucherApply, setIdVoucherApply] = useState();
     // Retrieve the JSON string from localStorage
     const userJson = localStorage.getItem("user");
+
 
     // Convert the JSON string to a JavaScript object
     const userObject = JSON.parse(userJson);
     const [totalMoney, setTotalMoney] = useState(0);
-
-console.log(listCartItemSelected);
-
-
-console.log(listCartItemSelected);
 
 
     useEffect(() => {
@@ -36,6 +34,18 @@ console.log(listCartItemSelected);
             }
             getListCardItem();
             // updateTotalMoney(listCartItemSelected);
+
+            const getListVoucherAvaliable = async () => {
+                const res = await fetch(`http://localhost:5050/user/api/v1/voucher/get-voucher-avaliable`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                })
+                const data = await res.json();
+                setListVoucherAvaliable(data);
+            }
+            getListVoucherAvaliable();
         }
 
 
@@ -169,13 +179,13 @@ console.log(listCartItemSelected);
                     }
                 });
                 const data = await response.text();
-    
+
                 if (response.status === 200) {
                     toastSuccess("Thành công", data);
-    
+
                     // Remove the deleted item from listCartItem
                     setListCartItem((prevList) => prevList.filter(item => item.id !== idCartItem));
-    
+
                     // Also remove the deleted item from listCartItemSelected
                     setListCartItemSelected((prevSelectedList) =>
                         prevSelectedList.filter(item => item.id !== idCartItem)
@@ -190,7 +200,7 @@ console.log(listCartItemSelected);
             console.error(err);
         }
     };
-    
+
 
     return (
         <>
@@ -370,16 +380,94 @@ console.log(listCartItemSelected);
                     <br />
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Giảm giá voucher(nếu có) : </label>
-                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}></label>
+                        <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(giaTriGiam)}
+                        </label>
                         <button
                             className="col-3 btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#modalAddVoucher"
                             onClick={() => {
-
+                                // getListVoucherValid(detailCurrentInvoice.tongTien);
                             }}
 
-                        >Detail Voucher</button>
+                        >Chọn Voucher</button>
+                    </div>
+
+                    {/* Modal add Voucher */}
+                    <div className="modal fade" id="modalAddVoucher" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ width: "100%" }}>
+                        <div className="modal-dialog" style={{ width: "100%", margin: "30px 300px" }}>
+                            <div className="modal-content" style={{ width: "1400px" }}>
+                                <div className="modal-header">
+                                    <h1 className="modal-title fs-5" id="exampleModalLabel">New Product Detail</h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div className="modal-body" >
+
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Tên</th>
+                                                <th scope="col">Mã</th>
+                                                <th scope="col">Giá trị giảm</th>
+                                                <th scope="col">Số Lượng còn lại</th>
+                                                <th scope="col">Ngày Bắt đầu</th>
+                                                <th scope="col">Ngày kết thúc</th>
+                                                <th scope="col">Trạng Thái</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {listVoucherAvaliable.map((voucher, index) => {
+                                                if (voucher.giaTriToiThieu < totalMoney) {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <th scope="row">{voucher.id}</th>
+                                                            <td>{voucher.ten}</td>
+                                                            <td>{voucher.ma}</td>
+                                                            <td>{voucher.giaTriGiam}</td>
+                                                            <td>{voucher.soLuong}</td>
+                                                            <td>{voucher.ngayBatDau ? new Date(voucher.ngayBatDau).toLocaleDateString() : ""}</td>
+                                                            <td>{voucher.ngayKetThuc ? new Date(voucher.ngayKetThuc).toLocaleDateString() : ""}</td>
+                                                            <td>{voucher.trangThai}</td>
+                                                            <td>
+                                                                <a
+                                                                    className='btn btn-primary'
+                                                                    onClick={() => {
+                                                                        let isConfirm = window.confirm(`are you sure to add voucher: ${voucher.en} to invoice ?`);
+                                                                        if (isConfirm) {
+                                                                            setGiaTriGiam(voucher.giaTriGiam != null ? voucher.giaTriGiam : 0);
+                                                                            setIdVoucherApply(voucher.id);
+                                                                            // Close modal after success
+                                                                            const modalElement = document.getElementById('modalAddVoucher');
+                                                                            if (modalElement) {
+                                                                                const modalInstance = Modal.getInstance(modalElement);
+                                                                                if (modalInstance) {
+                                                                                    modalInstance.hide();
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    Add</a>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                }
+                                            })}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -388,7 +476,7 @@ console.log(listCartItemSelected);
                     <div className="row">
                         <label className="col-5" style={{ fontSize: "18px", fontWeight: "bold" }}>Số Tiền Thanh toán : </label>
                         <label className="col-4" style={{ fontSize: "18px", fontWeight: "bold" }}>
-                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalMoney)}
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalMoney-giaTriGiam)}
                         </label>
                     </div>
                     <hr />

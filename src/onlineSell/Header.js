@@ -6,13 +6,16 @@ import { GContext2 } from './Context2';
 function Header({ setStateForm }) {
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
-    const {setCurrentScreen} = useContext(GContext2);
+    const {currentScreen,setCurrentScreen} = useContext(GContext2);
     const navItems = [
         { id: 1, text: "Trang Chủ", icon: "fa-solid fa-house",screen:"sellOnlineHomePage" },
         { id: 2, text: "Giỏ Hàng", icon: "fa-solid fa-cart-shopping",screen:"cartInfoPage"},
         { id: 3, text: "Tài Khoản", icon: "fa-solid fa-circle-user",screen:"accountPage" }
     ];
 
+    console.log(currentScreen);
+    
+    
     const userName = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).username : "";
 
     return (
@@ -62,6 +65,7 @@ function Header({ setStateForm }) {
                                 <button onClick={() => {
                                     localStorage.clear();
                                     setStateForm("login");
+                                    
                                 }} className="btn btn-dark">Logout</button>
                             </>
                         ) : (
